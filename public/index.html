@@ -2,478 +2,159 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#050505"
-  >
-
-  <meta
-    name="description"
-    content="BANTMAN — Personal Website"
-  >
-
-  <title>BANTMAN — Personal Website</title>
-
-  <link rel="stylesheet" href="/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050608">
+  <meta name="description" content="SAEPUDIN — Batman themed developer portfolio">
+  <title>SAEPUDIN — Dark Knight Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="scanline"></div>
+  <div class="bat-bg">🦇</div>
 
-  <!-- BACKGROUND -->
-  <div class="background">
-    <div class="grid"></div>
-    <div class="glow glow-one"></div>
-    <div class="glow glow-two"></div>
-  </div>
-
-  <!-- NAVBAR -->
-  <nav class="navbar">
-
-    <a href="#home" class="brand">
-      BANT<span>MAN</span>
-    </a>
-
-    <div class="nav-links">
-
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#project">Project</a>
-      <a href="#contact">Contact</a>
-
+  <header class="topbar">
+    <div class="brand">
+      <div class="bat-logo">🦇</div>
+      <span>SAEPUDIN</span>
     </div>
+    <div class="controls">
+      <button class="icon-btn" id="soundBtn" aria-label="Sound">▶</button>
+      <button class="icon-btn" id="stopBtn" aria-label="Stop">■</button>
+      <button class="red-btn" onclick="scrollToSection('about')">ABOUT</button>
+      <div class="lang"><span>EN</span><b>ID</b></div>
+      <button class="red-btn menu-btn" id="menuBtn">☰</button>
+    </div>
+  </header>
 
-    <button
-      class="menu-button"
-      id="menuButton"
-      aria-label="Menu"
-    >
-      ☰
-    </button>
-
-  </nav>
-
-  <!-- MOBILE MENU -->
-  <div class="mobile-menu" id="mobileMenu">
-
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#project">Project</a>
-    <a href="#contact">Contact</a>
-
-  </div>
-
-  <!-- HERO -->
   <main>
-
-    <section
-      class="hero section"
-      id="home"
-    >
-
-      <div class="hero-content">
-
-        <div class="badge">
-          <span class="dot"></span>
-          AVAILABLE FOR PROJECT
-        </div>
-
-        <h1>
-          I'M
-          <span class="gradient">
-            BANTMAN
-          </span>
-        </h1>
-
-        <p class="hero-text">
-          Developer yang suka membuat website,
-          tools, bot, dan berbagai project digital
-          dengan tampilan modern.
-        </p>
-
-        <div class="hero-buttons">
-
-          <a
-            href="#project"
-            class="button primary"
-          >
-            Lihat Project
-          </a>
-
-          <a
-            href="#contact"
-            class="button secondary"
-          >
-            Hubungi Saya
-          </a>
-
-        </div>
-
-        <div class="socials">
-
-          <a
-            href="https://github.com/"
-            target="_blank"
-          >
-            GitHub
-          </a>
-
-          <a
-            href="https://t.me/"
-            target="_blank"
-          >
-            Telegram
-          </a>
-
-          <a
-            href="#contact"
-          >
-            WhatsApp
-          </a>
-
-        </div>
-
+    <section class="hero section">
+      <div class="switcher">
+        <button class="active" data-theme="batman">Batman</button>
+        <button data-theme="gotham">Gotham</button>
       </div>
 
       <div class="hero-card">
-
-        <div class="bat-symbol">
-
-          <div class="wing left"></div>
-
-          <div class="bat-body">
-            <div class="head"></div>
-          </div>
-
-          <div class="wing right"></div>
-
+        <div class="bat-signal">
+          <div class="signal-ring"></div>
+          <div class="bat-symbol">🦇</div>
         </div>
-
-        <div class="card-name">
-          BANTMAN
-        </div>
-
-        <div class="card-status">
-          DIGITAL CREATOR
-        </div>
-
       </div>
 
+      <div class="badges">
+        <span class="badge red">★ UMUR  •  PELAJAR DEVELOPER</span>
+        <span class="badge">⚡ VIBE CODING</span>
+      </div>
+      <span class="location">📍 WEST JAVA, ID</span>
+
+      <h1>SAEPUDIN</h1>
+      <p class="subtitle">THE DARK KNIGHT OF CODE</p>
     </section>
 
-    <!-- ABOUT -->
-    <section
-      class="section about"
-      id="about"
-    >
-
-      <div class="section-title">
-
-        <span>01</span>
-
-        <h2>
-          About <b>Me</b>
-        </h2>
-
+    <section id="about" class="section">
+      <div class="content-card">
+        <p>Woi, gw <b>Saepudin</b>. Selamat datang di markas kecil gw. Gw suka ngulik website, bot, API, automation, dan berbagai project coding. Semua berawal dari rasa penasaran sampai akhirnya jadi tempat buat belajar dan bikin karya.</p>
       </div>
 
-      <div class="about-grid">
-
-        <div class="about-text">
-
-          <p>
-            Halo, saya <strong>BANTMAN</strong>.
-            Saya membuat berbagai project digital
-            mulai dari website, bot WhatsApp,
-            automation, hingga tools sederhana.
-          </p>
-
-          <p>
-            Saya lebih suka membuat sesuatu yang
-            sederhana, cepat, modern, dan mudah
-            digunakan.
-          </p>
-
-        </div>
-
-        <div class="info-card">
-
-          <div>
-            <span>NAME</span>
-            <strong>BANTMAN</strong>
-          </div>
-
-          <div>
-            <span>ROLE</span>
-            <strong>Developer</strong>
-          </div>
-
-          <div>
-            <span>FOCUS</span>
-            <strong>Web & Automation</strong>
-          </div>
-
-          <div>
-            <span>STATUS</span>
-            <strong class="green">
-              ● Active
-            </strong>
-          </div>
-
-        </div>
-
+      <div class="stats">
+        <div class="stat"><strong>14</strong><small>UMUR</small></div>
+        <div class="stat"><strong>2025</strong><small>STARTED</small></div>
+        <div class="stat"><strong>Node.JS</strong><small>FIRST STACK</small></div>
+        <div class="stat"><strong>69%</strong><small>VIBE CODE</small></div>
       </div>
-
     </section>
 
-    <!-- SKILLS -->
     <section class="section">
-
-      <div class="section-title">
-
-        <span>02</span>
-
-        <h2>
-          My <b>Skills</b>
-        </h2>
-
+      <div class="section-title"><b>TECH STACK</b><span>KEAHLIAN INI</span></div>
+      <div class="filters">
+        <button class="active">ALL TECH</button><button>FRONTEND</button><button>BACKEND</button><button>TOOLS & DEVOPS</button><button>DATABASE</button>
       </div>
-
-      <div class="skills">
-
-        <div class="skill">
-          <div>
-            <span>HTML</span>
-            <b>95%</b>
-          </div>
-
-          <div class="bar">
-            <i style="width:95%"></i>
-          </div>
-        </div>
-
-        <div class="skill">
-          <div>
-            <span>CSS</span>
-            <b>90%</b>
-          </div>
-
-          <div class="bar">
-            <i style="width:90%"></i>
-          </div>
-        </div>
-
-        <div class="skill">
-          <div>
-            <span>JavaScript</span>
-            <b>85%</b>
-          </div>
-
-          <div class="bar">
-            <i style="width:85%"></i>
-          </div>
-        </div>
-
-        <div class="skill">
-          <div>
-            <span>Node.js</span>
-            <b>85%</b>
-          </div>
-
-          <div class="bar">
-            <i style="width:85%"></i>
-          </div>
-        </div>
-
+      <div class="tech-grid">
+        <article class="tech"><i>⚛</i><div><b>React</b><small>UI Architecture</small></div><em>PRIMARY</em></article>
+        <article class="tech"><i>TS</i><div><b>TypeScript</b><small>Typed JavaScript</small></div><em>PRIMARY</em></article>
+        <article class="tech"><i>◆</i><div><b>Node.js</b><small>Server Runtime</small></div><em>PRIMARY</em></article>
+        <article class="tech"><i>≋</i><div><b>Tailwind</b><small>Utility-First CSS</small></div><em>CORE</em></article>
+        <article class="tech"><i>≡</i><div><b>Express</b><small>REST API Framework</small></div><em>PRIMARY</em></article>
+        <article class="tech"><i>⌁</i><div><b>Python</b><small>Automation & Scripting</small></div><em>ADVANCED</em></article>
+        <article class="tech"><i>■</i><div><b>JavaScript</b><small>Web Standard</small></div><em>CORE</em></article>
+        <article class="tech"><i>☕</i><div><b>Java</b><small>Object-Oriented App</small></div><em>ADVANCED</em></article>
+        <article class="tech"><i>PHP</i><div><b>PHP</b><small>Backend Web Scripting</small></div><em>INTERMEDIATE</em></article>
+        <article class="tech"><i>▤</i><div><b>SQL</b><small>Relational Queries</small></div><em>CORE</em></article>
+        <article class="tech"><i>›_</i><div><b>Shell</b><small>Terminal & Automation</small></div><em>CORE</em></article>
+        <article class="tech"><i>◎</i><div><b>Linux</b><small>Server Administration</small></div><em>CORE</em></article>
       </div>
-
     </section>
 
-    <!-- PROJECT -->
-    <section
-      class="section"
-      id="project"
-    >
-
-      <div class="section-title">
-
-        <span>03</span>
-
-        <h2>
-          My <b>Projects</b>
-        </h2>
-
-      </div>
-
+    <section class="section">
+      <div class="portfolio-head"><h2>KARYA PILIHAN</h2><span>PORTFOLIO ARCHIVES</span></div>
       <div class="projects">
-
         <article class="project">
-
-          <div class="project-number">
-            01
-          </div>
-
-          <div>
-
-            <h3>
-              BANTMAN BOT
-            </h3>
-
-            <p>
-              WhatsApp bot dengan berbagai
-              fitur automation dan utility.
-            </p>
-
-            <div class="tags">
-              <span>Node.js</span>
-              <span>WhatsApp</span>
-              <span>Baileys</span>
-            </div>
-
-          </div>
-
-          <a href="#">
-            ↗
-          </a>
-
+          <label>WEB APP</label><span class="number">01</span><h3>SAEPUDIN STUDIO</h3>
+          <p>Website eksperimen dengan desain dark, responsive, dan berbagai komponen interaktif.</p>
+          <div class="tags"><b>HTML</b><b>CSS</b><b>JavaScript</b></div>
+          <button onclick="toast('Project SAEPUDIN STUDIO dibuka')">↗</button>
         </article>
-
         <article class="project">
-
-          <div class="project-number">
-            02
-          </div>
-
-          <div>
-
-            <h3>
-              WEB GENERATOR
-            </h3>
-
-            <p>
-              Website generator untuk membuat
-              project secara otomatis.
-            </p>
-
-            <div class="tags">
-              <span>HTML</span>
-              <span>CSS</span>
-              <span>JavaScript</span>
-            </div>
-
-          </div>
-
-          <a href="#">
-            ↗
-          </a>
-
+          <label>BOT</label><span class="number">02</span><h3>BAT BOT</h3>
+          <p>Project bot untuk belajar automation, command handler, dan integrasi API.</p>
+          <div class="tags"><b>Node.js</b><b>Baileys</b></div>
+          <button onclick="toast('Project BAT BOT dibuka')">↗</button>
         </article>
-
         <article class="project">
-
-          <div class="project-number">
-            03
-          </div>
-
-          <div>
-
-            <h3>
-              DIGITAL TOOLS
-            </h3>
-
-            <p>
-              Kumpulan tools digital untuk
-              kebutuhan sehari-hari.
-            </p>
-
-            <div class="tags">
-              <span>Web</span>
-              <span>API</span>
-              <span>Tools</span>
-            </div>
-
-          </div>
-
-          <a href="#">
-            ↗
-          </a>
-
+          <label>REST API</label><span class="number">03</span><h3>GOTHAM API</h3>
+          <p>API sederhana untuk eksperimen backend, request handling, dan data processing.</p>
+          <div class="tags"><b>Node.js</b><b>REST API</b></div>
+          <button onclick="toast('Project GOTHAM API dibuka')">↗</button>
         </article>
-
+        <article class="project">
+          <label>UTILITY</label><span class="number">04</span><h3>BAT TOOLS</h3>
+          <p>Kumpulan tools kecil untuk membantu proses coding dan testing project.</p>
+          <div class="tags"><b>JavaScript</b><b>Tools</b></div>
+          <button onclick="toast('Project BAT TOOLS dibuka')">↗</button>
+        </article>
       </div>
-
     </section>
 
-    <!-- CONTACT -->
-    <section
-      class="section contact"
-      id="contact"
-    >
-
-      <div class="contact-box">
-
-        <span class="small-title">
-          LET'S CONNECT
-        </span>
-
-        <h2>
-          Punya project?
-          <br>
-          <b>Let's talk.</b>
-        </h2>
-
-        <p>
-          Jangan ragu untuk menghubungi saya
-          jika ingin bekerja sama atau sekadar
-          berdiskusi.
-        </p>
-
-        <div class="contact-buttons">
-
-          <a
-            href="https://wa.me/6280000000000"
-            target="_blank"
-            class="button primary"
-          >
-            WhatsApp
-          </a>
-
-          <a
-            href="https://t.me/"
-            target="_blank"
-            class="button secondary"
-          >
-            Telegram
-          </a>
-
-        </div>
-
+    <section class="section resources">
+      <div class="big-title">ALAT PENAMBAH ILMU</div>
+      <div class="resource-group">
+        <h3>● TERMINAL</h3>
+        <a href="https://termux.dev/" target="_blank">〉_ &nbsp; TERMUX</a>
+        <a href="https://vercel.com/" target="_blank">◈ &nbsp; VERCEL</a>
+        <a href="https://github.com/" target="_blank">● &nbsp; GITHUB</a>
       </div>
-
+      <div class="resource-group">
+        <h3>● AI</h3>
+        <a href="https://gemini.google.com/" target="_blank">✦ &nbsp; GEMINI</a>
+        <a href="https://chatgpt.com/" target="_blank">✦ &nbsp; CHATGPT</a>
+        <a href="https://claude.ai/" target="_blank">✦ &nbsp; CLAUDE</a>
+      </div>
+      <div class="resource-group">
+        <h3>● SEARCHING & CHAT</h3>
+        <a href="https://www.google.com/" target="_blank">G &nbsp; GOOGLE</a>
+        <a href="https://www.youtube.com/" target="_blank">▶ &nbsp; YOUTUBE</a>
+        <a href="https://github.com/" target="_blank">● &nbsp; GITHUB</a>
+        <a href="https://www.whatsapp.com/" target="_blank">◉ &nbsp; WHATSAPP</a>
+      </div>
     </section>
 
+    <footer class="section footer">
+      <div class="big-title">FIND ME ON</div>
+      <p>SOSIAL MEDIA:</p>
+      <div class="socials">
+        <a href="#" onclick="toast('Tambahkan link Instagram kamu')">◎ Instagram</a>
+        <a href="#" onclick="toast('Tambahkan link TikTok kamu')">♪ TikTok</a>
+        <a href="#" onclick="toast('Tambahkan link GitHub kamu')">◌ GitHub</a>
+        <a href="#" onclick="toast('Tambahkan link WhatsApp kamu')">◉ WhatsApp</a>
+        <a href="#" onclick="toast('Tambahkan link Telegram kamu')">➤ Telegram</a>
+      </div>
+      <small>© 2026 SAEPUDIN • GOTHAM CODE LAB</small>
+    </footer>
   </main>
 
-  <!-- FOOTER -->
-  <footer>
-
-    <div class="footer-brand">
-      BANTMAN
-    </div>
-
-    <p>
-      © <span id="year"></span>
-      BANTMAN. All rights reserved.
-    </p>
-
-  </footer>
-
-  <script src="/script.js"></script>
-
+  <div id="toast"></div>
+  <script src="script.js"></script>
 </body>
 </html>

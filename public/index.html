@@ -3,37 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#050608">
-  <meta name="description" content="SAEPUDIN — Batman themed developer portfolio">
   <title>SAEPUDIN — Dark Knight Developer</title>
+  <meta name="description" content="SAEPUDIN — Personal portfolio, projects, skills and resources.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <div class="scanline"></div>
   <div class="bat-bg">🦇</div>
 
   <header class="topbar">
-    <div class="brand">
-      <div class="bat-logo">🦇</div>
-      <span>SAEPUDIN</span>
-    </div>
+    <a href="#home" class="brand">
+      <span class="bat-logo">🦇</span>
+      SAEPUDIN
+    </a>
+
     <div class="controls">
-      <button class="icon-btn" id="soundBtn" aria-label="Sound">▶</button>
-      <button class="icon-btn" id="stopBtn" aria-label="Stop">■</button>
-      <button class="red-btn" onclick="scrollToSection('about')">ABOUT</button>
-      <div class="lang"><span>EN</span><b>ID</b></div>
-      <button class="red-btn menu-btn" id="menuBtn">☰</button>
+      <button class="icon-btn" id="soundBtn" aria-label="Sound">🔊</button>
+      <button class="icon-btn" id="stopBtn" aria-label="Stop sound">⏹</button>
+      <a class="red-btn" href="#about">ABOUT</a>
+      <div class="lang"><span>ID</span><b>EN</b></div>
+      <button class="icon-btn menu-btn" id="menuBtn">☰</button>
     </div>
   </header>
 
-  <main>
-    <section class="hero section">
+  <main id="home">
+
+    <section class="section hero">
       <div class="switcher">
-        <button class="active" data-theme="batman">Batman</button>
-        <button data-theme="gotham">Gotham</button>
+        <button class="active" data-theme="batman">BATMAN</button>
+        <button data-theme="gotham">GOTHAM</button>
       </div>
 
       <div class="hero-card">
@@ -44,115 +46,146 @@
       </div>
 
       <div class="badges">
-        <span class="badge red">★ UMUR  •  PELAJAR DEVELOPER</span>
-        <span class="badge">⚡ VIBE CODING</span>
+        <span class="badge red">UMUR • PELAJAR DEVELOPER</span>
+        <span class="badge">VIBE CODING</span>
       </div>
-      <span class="location">📍 WEST JAVA, ID</span>
+
+      <div class="location">📍 WEST JAVA, ID</div>
 
       <h1>SAEPUDIN</h1>
       <p class="subtitle">THE DARK KNIGHT OF CODE</p>
     </section>
 
-    <section id="about" class="section">
+    <section class="section" id="about">
+      <div class="section-title"><b>01</b> ABOUT ME</div>
       <div class="content-card">
-        <p>Woi, gw <b>Saepudin</b>. Selamat datang di markas kecil gw. Gw suka ngulik website, bot, API, automation, dan berbagai project coding. Semua berawal dari rasa penasaran sampai akhirnya jadi tempat buat belajar dan bikin karya.</p>
+        <p>
+          Saya SAEPUDIN, seorang pelajar yang suka membuat website,
+          bot, tools, dan berbagai project digital. Selalu belajar,
+          mencoba hal baru, dan membangun sesuatu dari ide sederhana.
+        </p>
       </div>
 
       <div class="stats">
-        <div class="stat"><strong>14</strong><small>UMUR</small></div>
+        <div class="stat"><strong>14</strong><small>PROJECTS</small></div>
         <div class="stat"><strong>2025</strong><small>STARTED</small></div>
-        <div class="stat"><strong>Node.JS</strong><small>FIRST STACK</small></div>
-        <div class="stat"><strong>69%</strong><small>VIBE CODE</small></div>
+        <div class="stat"><strong>Node.JS</strong><small>FAVORITE</small></div>
+        <div class="stat"><strong>69%</strong><small>CODING MODE</small></div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-title"><b>TECH STACK</b><span>KEAHLIAN INI</span></div>
+    <section class="section" id="stack">
+      <div class="section-title"><b>02</b> TECH STACK</div>
+
       <div class="filters">
-        <button class="active">ALL TECH</button><button>FRONTEND</button><button>BACKEND</button><button>TOOLS & DEVOPS</button><button>DATABASE</button>
+        <button class="active">ALL</button>
+        <button>WEB</button>
+        <button>BACKEND</button>
+        <button>TOOLS</button>
       </div>
+
       <div class="tech-grid">
-        <article class="tech"><i>⚛</i><div><b>React</b><small>UI Architecture</small></div><em>PRIMARY</em></article>
-        <article class="tech"><i>TS</i><div><b>TypeScript</b><small>Typed JavaScript</small></div><em>PRIMARY</em></article>
-        <article class="tech"><i>◆</i><div><b>Node.js</b><small>Server Runtime</small></div><em>PRIMARY</em></article>
-        <article class="tech"><i>≋</i><div><b>Tailwind</b><small>Utility-First CSS</small></div><em>CORE</em></article>
-        <article class="tech"><i>≡</i><div><b>Express</b><small>REST API Framework</small></div><em>PRIMARY</em></article>
-        <article class="tech"><i>⌁</i><div><b>Python</b><small>Automation & Scripting</small></div><em>ADVANCED</em></article>
-        <article class="tech"><i>■</i><div><b>JavaScript</b><small>Web Standard</small></div><em>CORE</em></article>
-        <article class="tech"><i>☕</i><div><b>Java</b><small>Object-Oriented App</small></div><em>ADVANCED</em></article>
-        <article class="tech"><i>PHP</i><div><b>PHP</b><small>Backend Web Scripting</small></div><em>INTERMEDIATE</em></article>
-        <article class="tech"><i>▤</i><div><b>SQL</b><small>Relational Queries</small></div><em>CORE</em></article>
-        <article class="tech"><i>›_</i><div><b>Shell</b><small>Terminal & Automation</small></div><em>CORE</em></article>
-        <article class="tech"><i>◎</i><div><b>Linux</b><small>Server Administration</small></div><em>CORE</em></article>
+        <div class="tech"><i>R</i><div><b>React</b><small>Frontend</small></div><em>WEB</em></div>
+        <div class="tech"><i>TS</i><div><b>TypeScript</b><small>Frontend</small></div><em>WEB</em></div>
+        <div class="tech"><i>N</i><div><b>Node.js</b><small>Runtime</small></div><em>BACKEND</em></div>
+        <div class="tech"><i>T</i><div><b>Tailwind</b><small>CSS</small></div><em>WEB</em></div>
+        <div class="tech"><i>E</i><div><b>Express</b><small>Backend</small></div><em>BACKEND</em></div>
+        <div class="tech"><i>Py</i><div><b>Python</b><small>Programming</small></div><em>TOOLS</em></div>
+        <div class="tech"><i>JS</i><div><b>JavaScript</b><small>Programming</small></div><em>WEB</em></div>
+        <div class="tech"><i>J</i><div><b>Java</b><small>Programming</small></div><em>TOOLS</em></div>
+        <div class="tech"><i>PHP</i><div><b>PHP</b><small>Backend</small></div><em>BACKEND</em></div>
+        <div class="tech"><i>SQL</i><div><b>SQL</b><small>Database</small></div><em>BACKEND</em></div>
+        <div class="tech"><i>SH</i><div><b>Shell</b><small>Terminal</small></div><em>TOOLS</em></div>
+        <div class="tech"><i>LIN</i><div><b>Linux</b><small>Operating System</small></div><em>TOOLS</em></div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="portfolio-head"><h2>KARYA PILIHAN</h2><span>PORTFOLIO ARCHIVES</span></div>
+    <section class="section" id="projects">
+      <div class="portfolio-head">
+        <h2>KARYA PILIHAN</h2>
+        <span>CLICK PROJECT →</span>
+      </div>
+
       <div class="projects">
-        <article class="project">
-          <label>WEB APP</label><span class="number">01</span><h3>SAEPUDIN STUDIO</h3>
-          <p>Website eksperimen dengan desain dark, responsive, dan berbagai komponen interaktif.</p>
-          <div class="tags"><b>HTML</b><b>CSS</b><b>JavaScript</b></div>
-          <button onclick="toast('Project SAEPUDIN STUDIO dibuka')">↗</button>
-        </article>
-        <article class="project">
-          <label>BOT</label><span class="number">02</span><h3>BAT BOT</h3>
-          <p>Project bot untuk belajar automation, command handler, dan integrasi API.</p>
-          <div class="tags"><b>Node.js</b><b>Baileys</b></div>
-          <button onclick="toast('Project BAT BOT dibuka')">↗</button>
-        </article>
-        <article class="project">
-          <label>REST API</label><span class="number">03</span><h3>GOTHAM API</h3>
-          <p>API sederhana untuk eksperimen backend, request handling, dan data processing.</p>
-          <div class="tags"><b>Node.js</b><b>REST API</b></div>
-          <button onclick="toast('Project GOTHAM API dibuka')">↗</button>
-        </article>
-        <article class="project">
-          <label>UTILITY</label><span class="number">04</span><h3>BAT TOOLS</h3>
-          <p>Kumpulan tools kecil untuk membantu proses coding dan testing project.</p>
-          <div class="tags"><b>JavaScript</b><b>Tools</b></div>
-          <button onclick="toast('Project BAT TOOLS dibuka')">↗</button>
-        </article>
+
+        <!-- GANTI href DI BAWAH DENGAN LINK KARYA KAMU -->
+        <a href="https://contoh-link-1.com" target="_blank" rel="noopener noreferrer" class="project">
+          <label>PROJECT 01</label>
+          <span class="number">01</span>
+          <h3>SAEPUDIN STUDIO</h3>
+          <p>Website personal dan project showcase SAEPUDIN.</p>
+          <div class="tags"><b>HTML</b><b>CSS</b><b>JS</b></div>
+          <button type="button">↗</button>
+        </a>
+
+        <a href="https://contoh-link-2.com" target="_blank" rel="noopener noreferrer" class="project">
+          <label>PROJECT 02</label>
+          <span class="number">02</span>
+          <h3>BAT BOT</h3>
+          <p>WhatsApp bot dengan berbagai fitur otomatis.</p>
+          <div class="tags"><b>NODE.JS</b><b>BAILEYS</b></div>
+          <button type="button">↗</button>
+        </a>
+
+        <a href="https://contoh-link-3.com" target="_blank" rel="noopener noreferrer" class="project">
+          <label>PROJECT 03</label>
+          <span class="number">03</span>
+          <h3>GOTHAM API</h3>
+          <p>API dan tools sederhana untuk kebutuhan project digital.</p>
+          <div class="tags"><b>API</b><b>NODE.JS</b></div>
+          <button type="button">↗</button>
+        </a>
+
+        <a href="https://contoh-link-4.com" target="_blank" rel="noopener noreferrer" class="project">
+          <label>PROJECT 04</label>
+          <span class="number">04</span>
+          <h3>BAT TOOLS</h3>
+          <p>Kumpulan tools dan utilitas yang dibuat untuk membantu workflow.</p>
+          <div class="tags"><b>TOOLS</b><b>WEB</b></div>
+          <button type="button">↗</button>
+        </a>
+
       </div>
     </section>
 
-    <section class="section resources">
-      <div class="big-title">ALAT PENAMBAH ILMU</div>
-      <div class="resource-group">
-        <h3>● TERMINAL</h3>
-        <a href="https://termux.dev/" target="_blank">〉_ &nbsp; TERMUX</a>
-        <a href="https://vercel.com/" target="_blank">◈ &nbsp; VERCEL</a>
-        <a href="https://github.com/" target="_blank">● &nbsp; GITHUB</a>
-      </div>
-      <div class="resource-group">
-        <h3>● AI</h3>
-        <a href="https://gemini.google.com/" target="_blank">✦ &nbsp; GEMINI</a>
-        <a href="https://chatgpt.com/" target="_blank">✦ &nbsp; CHATGPT</a>
-        <a href="https://claude.ai/" target="_blank">✦ &nbsp; CLAUDE</a>
-      </div>
-      <div class="resource-group">
-        <h3>● SEARCHING & CHAT</h3>
-        <a href="https://www.google.com/" target="_blank">G &nbsp; GOOGLE</a>
-        <a href="https://www.youtube.com/" target="_blank">▶ &nbsp; YOUTUBE</a>
-        <a href="https://github.com/" target="_blank">● &nbsp; GITHUB</a>
-        <a href="https://www.whatsapp.com/" target="_blank">◉ &nbsp; WHATSAPP</a>
+    <section class="section" id="resources">
+      <div class="big-title">RESOURCES</div>
+
+      <div class="resources">
+        <div class="resource-group">
+          <h3>⌘ TERMINAL</h3>
+          <a href="https://termux.com/" target="_blank" rel="noopener noreferrer">Termux ↗</a>
+          <a href="https://vercel.com/" target="_blank" rel="noopener noreferrer">Vercel ↗</a>
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </div>
+
+        <div class="resource-group">
+          <h3>✦ AI</h3>
+          <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Gemini ↗</a>
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT ↗</a>
+          <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer">Claude ↗</a>
+        </div>
+
+        <div class="resource-group">
+          <h3>⌕ SEARCHING & CHAT</h3>
+          <a href="https://www.google.com/" target="_blank" rel="noopener noreferrer">Google ↗</a>
+          <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
+          <a href="https://web.whatsapp.com/" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+        </div>
       </div>
     </section>
 
-    <footer class="section footer">
-      <div class="big-title">FIND ME ON</div>
-      <p>SOSIAL MEDIA:</p>
-      <div class="socials">
-        <a href="#" onclick="toast('Tambahkan link Instagram kamu')">◎ Instagram</a>
-        <a href="#" onclick="toast('Tambahkan link TikTok kamu')">♪ TikTok</a>
-        <a href="#" onclick="toast('Tambahkan link GitHub kamu')">◌ GitHub</a>
-        <a href="#" onclick="toast('Tambahkan link WhatsApp kamu')">◉ WhatsApp</a>
-        <a href="#" onclick="toast('Tambahkan link Telegram kamu')">➤ Telegram</a>
-      </div>
-      <small>© 2026 SAEPUDIN • GOTHAM CODE LAB</small>
-    </footer>
   </main>
+
+  <footer class="section footer">
+    <div class="socials">
+      <a href="#" onclick="toast('Link Instagram belum diisi');return false;">Instagram</a>
+      <a href="#" onclick="toast('Link GitHub belum diisi');return false;">GitHub</a>
+      <a href="#" onclick="toast('Link Telegram belum diisi');return false;">Telegram</a>
+      <a href="#" onclick="toast('Link WhatsApp belum diisi');return false;">WhatsApp</a>
+    </div>
+    <small>© 2026 SAEPUDIN • BUILT IN GOTHAM</small>
+  </footer>
 
   <div id="toast"></div>
   <script src="script.js"></script>

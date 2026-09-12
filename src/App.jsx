@@ -251,7 +251,7 @@ export default function App() {
       e.preventDefault();
 
       alert(
-        "Link APK belum diisi.\n\nSilakan isi APK_LINK di App.jsx."
+        "APK belum tersedia.\n\nAPK BELUM TERSEDIA."
       );
 
       return;

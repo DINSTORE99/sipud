@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import "./style.css";
 
+// ==========================================
+// LINK APK
+// ==========================================
+// Tempelkan link file APK Anda di sini:
+const APK_LINK = "https://sfile.mobi/xxxxx";
+
 const PLATFORMS = [
   {
     id: "tiktok",
@@ -67,7 +73,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
 
-  // Supabase State
+  // State Supabase: Pengunjung, Rating, Komentar
   const [visitorCount, setVisitorCount] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewName, setReviewName] = useState("");
@@ -214,6 +220,15 @@ export default function App() {
     setUrl("");
     setResult(null);
     setError("");
+  };
+
+  const handleDownloadAPK = () => {
+    if (!APK_LINK || APK_LINK === "https://sfile.mobi/xxxxx") {
+      alert("Link download APK belum disetel.");
+      return;
+    }
+    sendTelegramNotification("apk_download", { url: APK_LINK });
+    window.open(APK_LINK, "_blank", "noopener,noreferrer");
   };
 
   const handleReviewSubmit = async (e) => {
@@ -489,7 +504,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION RATING DAN KOMENTAR DI BAGIAN BAWAH */}
+        {/* SECTION RATING DAN ULASAN */}
         <section className="instructions-section" style={{ marginTop: "40px" }}>
           <div className="section-header">
             <span className="section-label">TESTIMONI</span>
@@ -631,22 +646,43 @@ export default function App() {
           <div className="footer-column">
             <h4>Informasi</h4>
             <ul>
-              <li><a href="https://api.dinn.my.id" target="_blank" rel="noreferrer">Dokumentasi API</a></li>
               <li><a href="#status">Status Layanan</a></li>
               <li><a href="#privacy">Privacy Policy</a></li>
               <li><a href="#terms">Terms of Service</a></li>
+              <li>
+                <a
+                  href={APK_LINK}
+                  onClick={(e) => {
+                    if (!APK_LINK || APK_LINK === "https://sfile.mobi/xxxxx") {
+                      e.preventDefault();
+                      handleDownloadAPK();
+                    }
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#22c55e", fontWeight: "700" }}
+                >
+                  📱 Download APK
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
+        {/* KARTU APK MENGGANTIKAN AKSES DOKUMENTASI */}
         <div className="api-access-card">
           <div className="api-card-text">
-            <h3>API Access</h3>
-            <p>Gunakan API kami untuk integrasi di website atau bot kamu.</p>
+            <h3>📱 SIDOWNLOAD Mobile APK</h3>
+            <p>Unduh dan instal aplikasi resmi kami untuk kemudahan mendownload media langsung dari smartphone.</p>
           </div>
-          <a href="https://api.dinn.my.id" target="_blank" rel="noopener noreferrer" className="api-card-btn">
-            Lihat Dokumentasi API →
-          </a>
+          <button
+            type="button"
+            className="api-card-btn"
+            onClick={handleDownloadAPK}
+            style={{ border: "none", cursor: "pointer" }}
+          >
+            Download APK Sekarang ↓
+          </button>
         </div>
 
         <div className="footer-bottom-copyright">

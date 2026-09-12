@@ -3,6 +3,7 @@ import "./style.css";
 
 import VisitorCounter from "./components/VisitorCounter";
 import Rating from "./components/Rating";
+import { supabase } from "./lib/supabase";
 
 const APK_LINK = "https://sfile.mobi/LINK-APK-KAMU";
 

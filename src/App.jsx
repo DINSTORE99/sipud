@@ -279,13 +279,14 @@ export default function App() {
           </div>
         </div>
 
-        <div className="visitor-badge-compact" title="Total Pengunjung">
+         <div className="visitor-badge-compact" title="Total Pengunjung">
           <span className="visitor-icon">👁️</span>
           <span className="visitor-count">
-            {visitorCount !== null ? visitorCount.toLocaleString() : "..."}
+            {visitorCount !== null ? `${visitorCount.toLocaleString()} dikunjungi` : "..."}
           </span>
         </div>
       </nav>
+
 
       <main className="content-container">
         <section className="hero-section">

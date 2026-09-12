@@ -67,7 +67,7 @@ export default function App() {
   const [history, setHistory] = useState([]);
 
   const sendTelegramNotification = (type, details = {}) => {
-    fetch("/api/notify", {
+    fetch("/api/notif", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type, details }),

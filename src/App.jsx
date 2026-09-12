@@ -5,8 +5,7 @@ import "./style.css";
 // ==========================================
 // LINK APK
 // ==========================================
-// Tempelkan link file APK Anda di sini:
-const APK_LINK = "https://sfile.mobi/xxxxx";
+const APK_LINK = "https://sfile.mobi/xxxxx"; // Ganti dengan link APK Anda
 
 const PLATFORMS = [
   {
@@ -73,7 +72,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
 
-  // State Supabase: Pengunjung, Rating, Komentar
+  // Supabase State
   const [visitorCount, setVisitorCount] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewName, setReviewName] = useState("");
@@ -81,6 +80,9 @@ export default function App() {
   const [reviewComment, setReviewComment] = useState("");
   const [loadingReview, setLoadingReview] = useState(false);
   const [reviewMsg, setReviewMsg] = useState("");
+
+  // Modal / Popup State
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const sendTelegramNotification = (type, details = {}) => {
     fetch("/api/notify", {
@@ -269,7 +271,7 @@ export default function App() {
 
   return (
     <div className="sidownload-app">
-      {/* NAVBAR DENGAN PENGUNJUNG DI ATAS KANAN */}
+      {/* NAVBAR */}
       <nav className="navbar">
         <div className="brand-wrapper">
           <div className="brand-icon">S</div>
@@ -279,7 +281,8 @@ export default function App() {
           </div>
         </div>
 
-         <div className="visitor-badge-compact" title="Total Pengunjung">
+        {/* PENGUNJUNG DI KANAN ATAS NAVBAR */}
+        <div className="visitor-badge-compact" title="Total Pengunjung">
           <span className="visitor-icon">👁️</span>
           <span className="visitor-count">
             {visitorCount !== null ? `${visitorCount.toLocaleString()} dikunjungi` : "..."}
@@ -287,8 +290,8 @@ export default function App() {
         </div>
       </nav>
 
-
       <main className="content-container">
+        {/* HERO SECTION */}
         <section className="hero-section">
           <div className="badge-tag">
             <span className="dot"></span>
@@ -303,6 +306,7 @@ export default function App() {
           </p>
         </section>
 
+        {/* MOCKUP HP */}
         <div className="mockup-container">
           <div className="orbit-icon pos-top-left">{PLATFORMS[0].icon}</div>
           <div className="orbit-icon pos-top-right">{PLATFORMS[1].icon}</div>
@@ -328,6 +332,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* PLATFORMS */}
         <div className="section-header">
           <span className="section-label">SUPPORTED</span>
           <h3 className="section-title">Pilih Platform</h3>
@@ -346,6 +351,7 @@ export default function App() {
           ))}
         </div>
 
+        {/* INPUT FORM */}
         <div className="section-header">
           <span className="section-label">DOWNLOAD</span>
           <h3 className="section-title">Masukkan Link</h3>
@@ -387,6 +393,7 @@ export default function App() {
 
           {error && <div className="msg-error">❌ {error}</div>}
 
+          {/* HASIL DOWNLOAD */}
           {result && (
             <div className="result-card">
               <div className="result-header">
@@ -444,6 +451,18 @@ export default function App() {
           )}
         </form>
 
+        {/* TOMBOL ONCLICK UNTUK BUKA MODAL RATING & KOMENTAR */}
+        <div style={{ textAlign: "center", marginTop: "24px" }}>
+          <button
+            type="button"
+            className="review-trigger-btn"
+            onClick={() => setShowReviewModal(true)}
+          >
+            ⭐ Beri Rating & Ulasan ({avgRating} / 5 • {reviews.length} Komentar)
+          </button>
+        </div>
+
+        {/* RIWAYAT */}
         {history.length > 0 && (
           <div className="history-section">
             <div className="history-header">
@@ -475,6 +494,7 @@ export default function App() {
           </div>
         )}
 
+        {/* PANDUAN PENGGUNAAN */}
         <section className="instructions-section">
           <div className="section-header">
             <span className="section-label">PANDUAN</span>
@@ -504,110 +524,126 @@ export default function App() {
             </div>
           </div>
         </section>
-
-        {/* SECTION RATING DAN ULASAN */}
-        <section className="instructions-section" style={{ marginTop: "40px" }}>
-          <div className="section-header">
-            <span className="section-label">TESTIMONI</span>
-            <h3 className="section-title">
-              Rating & Komentar ({avgRating} / 5 ⭐)
-            </h3>
-          </div>
-
-          <form className="input-card" onSubmit={handleReviewSubmit} style={{ marginTop: "16px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
-              <input
-                type="text"
-                className="input-box"
-                placeholder="Nama Anda"
-                value={reviewName}
-                onChange={(e) => setReviewName(e.target.value)}
-                required
-              />
-
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#ccc", fontSize: "14px" }}>
-                <span>Beri Rating:</span>
-                <select
-                  value={reviewRating}
-                  onChange={(e) => setReviewRating(e.target.value)}
-                  style={{
-                    background: "#18181b",
-                    color: "#fff",
-                    border: "1px solid #333",
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    outline: "none",
-                  }}
-                >
-                  <option value="5">⭐⭐⭐⭐⭐ (5 - Sangat Bagus)</option>
-                  <option value="4">⭐⭐⭐⭐ (4 - Bagus)</option>
-                  <option value="3">⭐⭐⭐ (3 - Cukup)</option>
-                  <option value="2">⭐⭐ (2 - Kurang)</option>
-                  <option value="1">⭐ (1 - Buruk)</option>
-                </select>
-              </div>
-
-              <textarea
-                className="input-box"
-                placeholder="Tulis ulasan atau pengalaman Anda menggunakan website ini..."
-                rows="3"
-                value={reviewComment}
-                onChange={(e) => setReviewComment(e.target.value)}
-                required
-                style={{ resize: "vertical", width: "100%", boxSizing: "border-box" }}
-              />
-
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={loadingReview || !reviewName.trim() || !reviewComment.trim()}
-              >
-                {loadingReview ? "Mengirim..." : "Kirim Ulasan"}
-              </button>
-
-              {reviewMsg && (
-                <p style={{ fontSize: "13px", color: reviewMsg.includes("berhasil") ? "#22c55e" : "#ef4444", margin: "4px 0 0" }}>
-                  {reviewMsg}
-                </p>
-              )}
-            </div>
-          </form>
-
-          <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
-            {reviews.length === 0 ? (
-              <p style={{ color: "#71717a", textAlign: "center", fontSize: "14px" }}>
-                Belum ada komentar. Jadilah yang pertama memberikan ulasan!
-              </p>
-            ) : (
-              reviews.map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    background: "rgba(255, 255, 255, 0.03)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    borderRadius: "12px",
-                    padding: "14px 18px",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                    <span style={{ fontWeight: "600", color: "#f4f4f5", fontSize: "14px" }}>{item.name}</span>
-                    <span style={{ fontSize: "12px" }}>{"⭐".repeat(item.rating)}</span>
-                  </div>
-                  <p style={{ margin: "0 0 8px", color: "#a1a1aa", fontSize: "13px", lineHeight: "1.5" }}>{item.comment}</p>
-                  <span style={{ fontSize: "11px", color: "#52525b" }}>
-                    {new Date(item.created_at).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
       </main>
 
+      {/* POPUP / MODAL RATING & KOMENTAR */}
+      {showReviewModal && (
+        <div className="modal-overlay" onClick={() => setShowReviewModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <span className="section-label">TESTIMONI</span>
+                <h3 className="section-title">
+                  Rating & Komentar ({avgRating} / 5 ⭐)
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setShowReviewModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Form Masukan Ulasan */}
+            <form className="input-card" onSubmit={handleReviewSubmit} style={{ marginTop: "14px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
+                <input
+                  type="text"
+                  className="input-box"
+                  placeholder="Nama Anda"
+                  value={reviewName}
+                  onChange={(e) => setReviewName(e.target.value)}
+                  required
+                />
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "#ccc", fontSize: "14px" }}>
+                  <span>Beri Rating:</span>
+                  <select
+                    value={reviewRating}
+                    onChange={(e) => setReviewRating(e.target.value)}
+                    style={{
+                      background: "#18181b",
+                      color: "#fff",
+                      border: "1px solid #333",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      outline: "none",
+                    }}
+                  >
+                    <option value="5">⭐⭐⭐⭐⭐ (5 - Sangat Bagus)</option>
+                    <option value="4">⭐⭐⭐⭐ (4 - Bagus)</option>
+                    <option value="3">⭐⭐⭐ (3 - Cukup)</option>
+                    <option value="2">⭐⭐ (2 - Kurang)</option>
+                    <option value="1">⭐ (1 - Buruk)</option>
+                  </select>
+                </div>
+
+                <textarea
+                  className="input-box"
+                  placeholder="Tulis ulasan atau pengalaman Anda menggunakan website ini..."
+                  rows="3"
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  required
+                  style={{ resize: "vertical", width: "100%", boxSizing: "border-box" }}
+                />
+
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={loadingReview || !reviewName.trim() || !reviewComment.trim()}
+                >
+                  {loadingReview ? "Mengirim..." : "Kirim Ulasan"}
+                </button>
+
+                {reviewMsg && (
+                  <p style={{ fontSize: "13px", color: reviewMsg.includes("berhasil") ? "#22c55e" : "#ef4444", margin: "4px 0 0" }}>
+                    {reviewMsg}
+                  </p>
+                )}
+              </div>
+            </form>
+
+            {/* Hasil Komentar Pengguna */}
+            <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {reviews.length === 0 ? (
+                <p style={{ color: "#71717a", textAlign: "center", fontSize: "13px", padding: "16px 0" }}>
+                  Belum ada komentar. Jadilah yang pertama memberikan ulasan!
+                </p>
+              ) : (
+                reviews.map((item) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: "12px",
+                      padding: "12px 16px",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                      <span style={{ fontWeight: "600", color: "#f4f4f5", fontSize: "13.5px" }}>{item.name}</span>
+                      <span style={{ fontSize: "12px" }}>{"⭐".repeat(item.rating)}</span>
+                    </div>
+                    <p style={{ margin: "0 0 6px", color: "#a1a1aa", fontSize: "12.5px", lineHeight: "1.4" }}>{item.comment}</p>
+                    <span style={{ fontSize: "10.5px", color: "#52525b" }}>
+                      {new Date(item.created_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER */}
       <footer className="app-footer-custom">
         <div className="footer-brand-section">
           <div className="brand-wrapper">
@@ -668,6 +704,22 @@ export default function App() {
               </li>
             </ul>
           </div>
+        </div>
+
+        {/* KARTU PROMOSI APK */}
+        <div className="api-access-card">
+          <div className="api-card-text">
+            <h3>📱 SIDOWNLOAD Mobile APK</h3>
+            <p>Unduh dan instal aplikasi resmi kami untuk kemudahan mendownload media langsung dari smartphone Anda.</p>
+          </div>
+          <button
+            type="button"
+            className="api-card-btn"
+            onClick={handleDownloadAPK}
+            style={{ border: "none", cursor: "pointer" }}
+          >
+            Download APK Sekarang ↓
+          </button>
         </div>
 
         <div className="footer-bottom-copyright">

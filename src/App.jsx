@@ -5,7 +5,7 @@ import "./style.css";
 // ==========================================
 // LINK APK
 // ==========================================
-const APK_LINK = "https://sfile.mobi/xxxxx"; // Ganti dengan link APK Anda
+const APK_LINK = "https://sfile.co/hM7ZY7yahZq"; // Ganti dengan link APK Anda
 
 const PLATFORMS = [
   {

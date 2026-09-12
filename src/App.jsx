@@ -3,17 +3,16 @@ import "./style.css";
 
 import VisitorCounter from "./components/VisitorCounter";
 import Rating from "./components/Rating";
-import { supabase } from "./lib/supabase";
 
 const APK_LINK = "https://sfile.mobi/LINK-APK-KAMU";
 
-const platforms = [
+const PLATFORMS = [
   {
     id: "tiktok",
     name: "TikTok",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.24V2h-3.4v13.67a2.9 2.9 0 1 1-2.9-2.9c.3 0 .59.05.86.13V9.43a6.28 6.28 0 0 0-.86-.06A6.3 6.3 0 1 0 15.82 15V8.84a8.22 8.22 0 0 0 4.8 1.53V6.99c-.35 0-.69-.1-1.03-.3Z" />
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 1 1-5.2-1.74 2.89 2.89 0 0 1 2.31-1.07V9.42a6.32 6.32 0 1 0 6.34 6.32V8.87a8.16 8.16 0 0 0 4.77 1.52V6.95a4.85 4.85 0 0 1-1-.26z" />
       </svg>
     ),
   },
@@ -83,6 +82,10 @@ function App() {
 
   const [history, setHistory] = useState([]);
 
+  /* =========================
+     LOAD HISTORY
+  ========================= */
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem("sidownload_history");
@@ -98,10 +101,14 @@ function App() {
       console.error("History error:", err);
     }
 
-    notifyVisit();
+    sendNotification("visit");
   }, []);
 
-  const notifyVisit = async () => {
+  /* =========================
+     NOTIFICATION
+  ========================= */
+
+  const sendNotification = async (type, details = {}) => {
     try {
       await fetch("/api/notify", {
         method: "POST",
@@ -109,42 +116,68 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: "visit",
+          type,
+          details,
         }),
       });
     } catch {
-      // notification tidak boleh mengganggu website
+      // Jangan sampai notification
+      // mengganggu website.
     }
   };
 
-  const notifyDownload = async () => {
-    try {
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "downloaded",
-        }),
-      });
-    } catch {
-      // ignore
-    }
-  };
+  /* =========================
+     PASTE
+  ========================= */
 
-  const pasteURL = async () => {
+  const handlePaste = async () => {
     try {
+      if (!navigator.clipboard) {
+        throw new Error("Clipboard tidak tersedia");
+      }
+
       const text = await navigator.clipboard.readText();
 
-      if (text) {
-        setUrl(text);
-        setError("");
+      if (!text) {
+        setError("Clipboard kosong.");
+        return;
       }
+
+      setUrl(text.trim());
+      setError("");
+      setResult(null);
     } catch {
-      setError("Clipboard tidak dapat diakses.");
+      setError(
+        "Clipboard tidak dapat diakses. Silakan paste link secara manual."
+      );
     }
   };
+
+  /* =========================
+     SAVE HISTORY
+  ========================= */
+
+  const saveHistory = (item) => {
+    try {
+      const updated = [
+        item,
+        ...history.filter((old) => old.url !== item.url),
+      ].slice(0, 8);
+
+      setHistory(updated);
+
+      localStorage.setItem(
+        "sidownload_history",
+        JSON.stringify(updated)
+      );
+    } catch (err) {
+      console.error("Save history error:", err);
+    }
+  };
+
+  /* =========================
+     CLEAR
+  ========================= */
 
   const clearURL = () => {
     setUrl("");
@@ -152,19 +185,17 @@ function App() {
     setError("");
   };
 
-  const saveHistory = (item) => {
-    const updated = [
-      item,
-      ...history.filter((old) => old.url !== item.url),
-    ].slice(0, 8);
+  const clearHistory = () => {
+    setHistory([]);
 
-    setHistory(updated);
-
-    localStorage.setItem(
-      "sidownload_history",
-      JSON.stringify(updated)
-    );
+    try {
+      localStorage.removeItem("sidownload_history");
+    } catch {}
   };
+
+  /* =========================
+     DOWNLOAD
+  ========================= */
 
   const handleDownload = async (e) => {
     e.preventDefault();
@@ -180,6 +211,11 @@ function App() {
     setError("");
     setResult(null);
 
+    await sendNotification("process", {
+      url: cleanURL,
+      platform: selectedPlatform,
+    });
+
     try {
       const response = await fetch("/api/download", {
         method: "POST",
@@ -191,7 +227,17 @@ function App() {
         }),
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
+
+      let data;
+
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(
+          "Server mengembalikan response yang tidak valid."
+        );
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(
@@ -201,52 +247,103 @@ function App() {
 
       setResult(data);
 
+      const downloadUrl =
+        data.download ||
+        data.url ||
+        data.video ||
+        data.audio ||
+        data.downloads?.[0]?.url ||
+        cleanURL;
+
       const historyItem = {
-        url: cleanURL,
-        platform: selectedPlatform,
-        title: data.title || "Media",
-        thumbnail: data.thumbnail || null,
+        url: downloadUrl,
+        source_url: cleanURL,
+        platform:
+          data.platform ||
+          selectedPlatform ||
+          "Media",
+        title:
+          data.title ||
+          "Media berhasil diproses",
+        thumbnail:
+          data.thumbnail ||
+          null,
         created_at: Date.now(),
+        date: new Date().toLocaleDateString("id-ID"),
       };
 
       saveHistory(historyItem);
 
-      await notifyDownload();
+      if (data.platform) {
+        setSelectedPlatform(
+          String(data.platform).toLowerCase()
+        );
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Download error:", err);
 
       setError(
-        err.message ||
-          "Terjadi kesalahan. Silakan coba lagi."
+        err?.message ||
+          "Terjadi kesalahan saat memproses media."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const downloadResult = () => {
+  /* =========================
+     DOWNLOAD RESULT
+  ========================= */
+
+  const handleResultDownload = async (label = "download") => {
     if (!result) return;
 
     const downloadURL =
       result.download ||
       result.url ||
       result.video ||
-      result.audio;
+      result.audio ||
+      result.downloads?.[0]?.url;
 
     if (!downloadURL) {
       setError("Link download tidak ditemukan.");
       return;
     }
 
-    window.open(downloadURL, "_blank", "noopener,noreferrer");
+    await sendNotification("downloaded", {
+      title: result.title || "Media",
+      platform:
+        result.platform ||
+        selectedPlatform,
+      label,
+    });
+
+    window.open(
+      downloadURL,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
+  /* =========================
+     HISTORY CLICK
+  ========================= */
+
   const selectHistory = (item) => {
-    setUrl(item.url);
+    setUrl(
+      item.source_url ||
+        item.url ||
+        ""
+    );
 
     if (item.platform) {
-      setSelectedPlatform(item.platform);
+      setSelectedPlatform(
+        String(item.platform).toLowerCase()
+      );
     }
+
+    setError("");
+    setResult(null);
 
     window.scrollTo({
       top: 0,
@@ -254,19 +351,18 @@ function App() {
     });
   };
 
+  /* =========================
+     APK
+  ========================= */
+
   const handleAPK = async () => {
-    try {
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "apk_install",
-        }),
-      });
-    } catch {
-      // ignore
+    await sendNotification("apk_install");
+
+    if (!APK_LINK || APK_LINK.includes("LINK-APK-KAMU")) {
+      setError(
+        "Link APK belum dipasang oleh administrator."
+      );
+      return;
     }
 
     window.open(
@@ -277,448 +373,39 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="sidownload-app">
 
-      {/* VISITOR */}
+      {/* =========================
+          VISITOR
+      ========================= */}
+
       <VisitorCounter />
 
-      {/* NAVBAR */}
-      <header className="navbar">
-        <div className="nav-inner">
-
-          <a href="/" className="brand">
-            <span className="brand-icon">SI</span>
-
-            <span>
-              <strong>SIDOWNLOAD</strong>
-              <small>MEDIA DOWNLOADER</small>
-            </span>
-          </a>
-
-          <nav className="nav-menu">
-            <a href="#download">Download</a>
-            <a href="#platform">Platform</a>
-            <a href="#rating">Rating</a>
-          </nav>
-
-        </div>
-      </header>
-
-      {/* HERO */}
-      <main>
-
-        <section className="hero">
-
-          <div className="hero-content">
-
-            <div className="hero-badge">
-              <span className="status-dot"></span>
-              ONLINE & READY
-            </div>
-
-            <h1>
-              Download Media
-              <br />
-              <span>Tanpa Ribet.</span>
-            </h1>
-
-            <p>
-              Download video dan audio dari berbagai
-              platform dengan cepat, mudah, dan gratis.
-            </p>
-
-            <div className="hero-actions">
-              <a
-                href="#download"
-                className="primary-button"
-              >
-                Mulai Download
-                <span>↓</span>
-              </a>
-
-              <a
-                href="#rating"
-                className="secondary-button"
-              >
-                ⭐ Rating
-              </a>
-            </div>
-
-          </div>
-
-          {/* PHONE MOCKUP */}
-          <div className="hero-visual">
-
-            <div className="phone">
-
-              <div className="phone-notch"></div>
-
-              <div className="phone-screen">
-
-                <div className="phone-top">
-                  <span>SIDOWNLOAD</span>
-                  <span>•••</span>
-                </div>
-
-                <div className="phone-card">
-
-                  <div className="phone-play">
-                    ▶
-                  </div>
-
-                  <div>
-                    <strong>
-                      Fast Downloader
-                    </strong>
-
-                    <small>
-                      Simple • Fast • Free
-                    </small>
-                  </div>
-
-                </div>
-
-                <div className="phone-lines">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-
-                <div className="phone-download">
-                  Download
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* PLATFORM */}
-        <section
-          className="platform-section"
-          id="platform"
-        >
-
-          <div className="section-heading">
-            <span>SUPPORTED PLATFORM</span>
-            <h2>Pilih Platform</h2>
-          </div>
-
-          <div className="platform-grid">
-
-            {platforms.map((platform) => (
-              <button
-                key={platform.id}
-                type="button"
-                className={
-                  selectedPlatform === platform.id
-                    ? "platform-card active"
-                    : "platform-card"
-                }
-                onClick={() =>
-                  setSelectedPlatform(platform.id)
-                }
-              >
-                <div className="platform-icon">
-                  {platform.icon}
-                </div>
-
-                <span>{platform.name}</span>
-
-                {selectedPlatform === platform.id && (
-                  <small>Selected</small>
-                )}
-              </button>
-            ))}
-
-          </div>
-
-        </section>
-
-        {/* DOWNLOAD */}
-        <section
-          className="download-section"
-          id="download"
-        >
-
-          <div className="download-box">
-
-            <div className="download-heading">
-              <span className="download-number">
-                01
-              </span>
-
-              <div>
-                <span>DOWNLOAD MEDIA</span>
-                <h2>Masukkan Link</h2>
-              </div>
-            </div>
-
-            <form onSubmit={handleDownload}>
-
-              <div className="url-input-wrapper">
-
-                <span className="link-icon">
-                  🔗
-                </span>
-
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => {
-                    setUrl(e.target.value);
-                    setError("");
-                  }}
-                  placeholder="Paste link video di sini..."
-                  autoComplete="off"
-                />
-
-                <button
-                  type="button"
-                  className="paste-button"
-                  onClick={pasteURL}
-                >
-                  PASTE
-                </button>
-
-              </div>
-
-              <button
-                type="submit"
-                className="download-button"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner"></span>
-                    MEMPROSES...
-                  </>
-                ) : (
-                  <>
-                    DOWNLOAD SEKARANG
-                    <span>→</span>
-                  </>
-                )}
-              </button>
-
-            </form>
-
-            {error && (
-              <div className="error-box">
-                ⚠️ {error}
-              </div>
-            )}
-
-            {result && (
-              <div className="download-result">
-
-                {result.thumbnail && (
-                  <img
-                    src={result.thumbnail}
-                    alt=""
-                    className="result-thumbnail"
-                  />
-                )}
-
-                <div className="result-info">
-
-                  <span>DOWNLOAD READY</span>
-
-                  <h3>
-                    {result.title || "Media berhasil diproses"}
-                  </h3>
-
-                  <button
-                    type="button"
-                    onClick={downloadResult}
-                    className="result-download"
-                  >
-                    Download File →
-                  </button>
-
-                </div>
-
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="clear-button"
-              onClick={clearURL}
-            >
-              CLEAR
-            </button>
-
-          </div>
-
-        </section>
-
-        {/* HISTORY */}
-        <section className="history-section">
-
-          <div className="section-heading">
-            <span>RECENT</span>
-            <h2>Riwayat Download</h2>
-          </div>
-
-          {history.length === 0 ? (
-            <div className="empty-history">
-              <div>🗂️</div>
-
-              <p>
-                Belum ada riwayat download.
-              </p>
-
-              <small>
-                Riwayat download kamu akan muncul di sini.
-              </small>
-            </div>
-          ) : (
-            <div className="history-list">
-
-              {history.map((item, index) => (
-                <button
-                  type="button"
-                  className="history-item"
-                  key={`${item.url}-${index}`}
-                  onClick={() => selectHistory(item)}
-                >
-
-                  <div className="history-thumb">
-                    {item.thumbnail ? (
-                      <img
-                        src={item.thumbnail}
-                        alt=""
-                      />
-                    ) : (
-                      <span>▶</span>
-                    )}
-                  </div>
-
-                  <div className="history-info">
-                    <strong>
-                      {item.title || "Media"}
-                    </strong>
-
-                    <small>
-                      {item.platform || "Media"}
-                    </small>
-                  </div>
-
-                  <span className="history-arrow">
-                    →
-                  </span>
-
-                </button>
-              ))}
-
-            </div>
-          )}
-
-        </section>
-
-        {/* HOW TO */}
-        <section className="steps-section">
-
-          <div className="section-heading center">
-            <span>HOW IT WORKS</span>
-            <h2>3 Langkah Mudah</h2>
-          </div>
-
-          <div className="steps-grid">
-
-            <div className="step-card">
-              <span>01</span>
-              <div>🔗</div>
-              <h3>Copy Link</h3>
-              <p>
-                Salin link video atau media
-                dari platform pilihanmu.
-              </p>
-            </div>
-
-            <div className="step-card">
-              <span>02</span>
-              <div>⚡</div>
-              <h3>Paste Link</h3>
-              <p>
-                Tempel link ke kolom
-                downloader SIDOWNLOAD.
-              </p>
-            </div>
-
-            <div className="step-card">
-              <span>03</span>
-              <div>⬇️</div>
-              <h3>Download</h3>
-              <p>
-                Klik download dan simpan
-                media ke perangkatmu.
-              </p>
-            </div>
-
-          </div>
-
-        </section>
-
-        {/* RATING */}
-        <Rating />
-
-        {/* APK */}
-        <section className="apk-section">
-
-          <div className="apk-card">
-
-            <div className="apk-icon">
+      {/* =========================
+          NAVBAR
+      ========================= */}
+
+      <nav className="navbar">
+        <div className="brand-wrapper">
+
+          <a
+            href="/"
+            className="brand-link"
+            aria-label="SIDOWNLOAD"
+          >
+            <div className="brand-icon">
               SI
             </div>
 
-            <div className="apk-info">
-              <span>COMING SOON</span>
-
-              <h2>
-                SIDOWNLOAD APK
-              </h2>
-
-              <p>
-                Nikmati pengalaman download
-                lebih praktis langsung dari Android.
-              </p>
+            <div className="brand-text">
+              <h2>SIDOWNLOAD</h2>
+              <span>
+                FAST • SIMPLE • FREE
+              </span>
             </div>
+          </a>
 
-            <button
-              type="button"
-              onClick={handleAPK}
-              className="apk-button"
-            >
-              Download APK →
-            </button>
-
-          </div>
-
-        </section>
-
-      </main>
-
-      {/* FOOTER */}
-      <footer className="footer">
-
-        <div className="footer-inner">
-
-          <div>
-            <div className="footer-brand">
-              SIDOWNLOAD
-            </div>
-
-            <p>
-              Simple. Fast. Free.
-            </p>
-          </div>
-
-          <div className="footer-links">
+          <div className="nav-links">
             <a href="#download">
               Download
             </a>
@@ -730,6 +417,602 @@ function App() {
             <a href="#rating">
               Rating
             </a>
+          </div>
+
+        </div>
+      </nav>
+
+      {/* =========================
+          MAIN
+      ========================= */}
+
+      <main className="content-container">
+
+        {/* HERO */}
+
+        <section className="hero-section">
+
+          <div className="badge-tag">
+            <span className="dot"></span>
+
+            <span>
+              MEDIA DOWNLOADER
+            </span>
+          </div>
+
+          <h1 className="hero-title">
+            Download Video
+            <br />
+            & Audio{" "}
+            <span className="text-green">
+              Tanpa Ribet
+            </span>
+          </h1>
+
+          <p className="hero-desc">
+            Download media favorit kamu
+            dengan cepat, sederhana,
+            dan gratis.
+          </p>
+
+          <div className="hero-buttons">
+
+            <a
+              href="#download"
+              className="hero-button primary"
+            >
+              Mulai Download
+              <span>↓</span>
+            </a>
+
+            <a
+              href="#rating"
+              className="hero-button secondary"
+            >
+              ⭐ Rating
+            </a>
+
+          </div>
+
+        </section>
+
+        {/* PHONE MOCKUP */}
+
+        <div className="mockup-container">
+
+          <div className="orbit-icon pos-top-left">
+            {PLATFORMS[0].icon}
+          </div>
+
+          <div className="orbit-icon pos-top-right">
+            {PLATFORMS[1].icon}
+          </div>
+
+          <div className="orbit-icon pos-mid-left">
+            {PLATFORMS[4].icon}
+          </div>
+
+          <div className="orbit-icon pos-mid-right">
+            {PLATFORMS[5].icon}
+          </div>
+
+          <div className="phone-mockup">
+
+            <div className="mockup-notch"></div>
+
+            <div className="mockup-inner">
+
+              <span className="mockup-brand">
+                SIDOWNLOAD
+              </span>
+
+              <div className="mockup-play-screen">
+
+                <div className="mockup-glow"></div>
+
+                <div className="mockup-play-btn">
+
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="#000"
+                  >
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+
+                </div>
+
+              </div>
+
+              <div className="mockup-bars">
+
+                <div className="mockup-bar w-long"></div>
+
+                <div className="mockup-bar w-short"></div>
+
+              </div>
+
+              <div className="mockup-download">
+                DOWNLOAD
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* PLATFORM */}
+
+        <section
+          id="platform"
+          className="platform-section"
+        >
+
+          <div className="section-header">
+
+            <span className="section-label">
+              SUPPORTED
+            </span>
+
+            <h3 className="section-title">
+              Pilih Platform
+            </h3>
+
+          </div>
+
+          <div className="platform-grid">
+
+            {PLATFORMS.map((platform) => (
+
+              <button
+                key={platform.id}
+                type="button"
+                className={`platform-card ${
+                  selectedPlatform === platform.id
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setSelectedPlatform(platform.id)
+                }
+              >
+
+                <div className="platform-icon">
+                  {platform.icon}
+                </div>
+
+                <span>
+                  {platform.name}
+                </span>
+
+                {selectedPlatform === platform.id && (
+                  <small>
+                    Selected
+                  </small>
+                )}
+
+              </button>
+
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* DOWNLOAD */}
+
+        <section
+          id="download"
+          className="download-section"
+        >
+
+          <div className="section-header">
+
+            <span className="section-label">
+              DOWNLOAD
+            </span>
+
+            <h3 className="section-title">
+              Masukkan Link
+            </h3>
+
+          </div>
+
+          <form
+            className="input-card"
+            onSubmit={handleDownload}
+          >
+
+            <div className="input-field-wrapper">
+
+              <span className="input-link-icon">
+                🔗
+              </span>
+
+              <input
+                type="url"
+                className="input-box"
+                placeholder="Tempel tautan video / musik di sini..."
+                value={url}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  setError("");
+                }}
+                autoComplete="off"
+                required
+              />
+
+              <button
+                type="button"
+                className="paste-button"
+                onClick={handlePaste}
+              >
+                PASTE
+              </button>
+
+            </div>
+
+            <button
+              type="submit"
+              className="download-button"
+              disabled={loading}
+            >
+
+              {loading ? (
+                <>
+                  <span className="spinner"></span>
+                  MEMPROSES...
+                </>
+              ) : (
+                <>
+                  DOWNLOAD SEKARANG
+                  <span>→</span>
+                </>
+              )}
+
+            </button>
+
+          </form>
+
+          {/* ERROR */}
+
+          {error && (
+            <div className="error-box">
+              ⚠️ {error}
+            </div>
+          )}
+
+          {/* RESULT */}
+
+          {result && (
+            <div className="download-result">
+
+              {result.thumbnail && (
+                <img
+                  src={result.thumbnail}
+                  alt="Thumbnail"
+                  className="result-thumbnail"
+                  loading="lazy"
+                />
+              )}
+
+              <div className="result-info">
+
+                <span>
+                  DOWNLOAD READY
+                </span>
+
+                <h3>
+                  {result.title ||
+                    "Media berhasil diproses"}
+                </h3>
+
+                <button
+                  type="button"
+                  className="result-download"
+                  onClick={() =>
+                    handleResultDownload(
+                      "result"
+                    )
+                  }
+                >
+                  Download File →
+                </button>
+
+              </div>
+
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="clear-button"
+            onClick={clearURL}
+          >
+            CLEAR
+          </button>
+
+        </section>
+
+        {/* HISTORY */}
+
+        <section className="history-section">
+
+          <div className="section-header history-header">
+
+            <div>
+              <span className="section-label">
+                RECENT
+              </span>
+
+              <h3 className="section-title">
+                Riwayat Download
+              </h3>
+            </div>
+
+            {history.length > 0 && (
+              <button
+                type="button"
+                className="clear-history"
+                onClick={clearHistory}
+              >
+                Hapus
+              </button>
+            )}
+
+          </div>
+
+          {history.length === 0 ? (
+
+            <div className="empty-history">
+
+              <div className="empty-history-icon">
+                🗂️
+              </div>
+
+              <p>
+                Belum ada riwayat download.
+              </p>
+
+              <small>
+                Riwayat download kamu
+                akan muncul di sini.
+              </small>
+
+            </div>
+
+          ) : (
+
+            <div className="history-list">
+
+              {history.map((item, index) => (
+
+                <button
+                  type="button"
+                  className="history-item"
+                  key={`${item.url}-${index}`}
+                  onClick={() =>
+                    selectHistory(item)
+                  }
+                >
+
+                  <div className="history-thumb">
+
+                    {item.thumbnail ? (
+                      <img
+                        src={item.thumbnail}
+                        alt=""
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span>
+                        ▶
+                      </span>
+                    )}
+
+                  </div>
+
+                  <div className="history-info">
+
+                    <strong>
+                      {item.title ||
+                        "Media"}
+                    </strong>
+
+                    <small>
+                      {item.platform ||
+                        "Media"}
+                    </small>
+
+                    {item.date && (
+                      <em>
+                        {item.date}
+                      </em>
+                    )}
+
+                  </div>
+
+                  <span className="history-arrow">
+                    →
+                  </span>
+
+                </button>
+
+              ))}
+
+            </div>
+
+          )}
+
+        </section>
+
+        {/* HOW IT WORKS */}
+
+        <section className="steps-section">
+
+          <div className="section-header center">
+
+            <span className="section-label">
+              HOW IT WORKS
+            </span>
+
+            <h3 className="section-title">
+              3 Langkah Mudah
+            </h3>
+
+          </div>
+
+          <div className="steps-grid">
+
+            <div className="step-card">
+
+              <span>
+                01
+              </span>
+
+              <div>
+                🔗
+              </div>
+
+              <h3>
+                Copy Link
+              </h3>
+
+              <p>
+                Salin link video atau
+                media dari platform
+                pilihanmu.
+              </p>
+
+            </div>
+
+            <div className="step-card">
+
+              <span>
+                02
+              </span>
+
+              <div>
+                ⚡
+              </div>
+
+              <h3>
+                Paste Link
+              </h3>
+
+              <p>
+                Tempel link ke kolom
+                downloader SIDOWNLOAD.
+              </p>
+
+            </div>
+
+            <div className="step-card">
+
+              <span>
+                03
+              </span>
+
+              <div>
+                ⬇️
+              </div>
+
+              <h3>
+                Download
+              </h3>
+
+              <p>
+                Klik download dan
+                simpan media ke
+                perangkatmu.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* RATING */}
+
+        <Rating />
+
+        {/* APK */}
+
+        <section className="apk-section">
+
+          <div className="apk-card">
+
+            <div className="apk-icon">
+              SI
+            </div>
+
+            <div className="apk-info">
+
+              <span>
+                ANDROID APP
+              </span>
+
+              <h2>
+                SIDOWNLOAD APK
+              </h2>
+
+              <p>
+                Nikmati pengalaman
+                download lebih praktis
+                langsung dari Android.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              className="apk-button"
+              onClick={handleAPK}
+            >
+              Download APK →
+            </button>
+
+          </div>
+
+        </section>
+
+      </main>
+
+      {/* FOOTER */}
+
+      <footer className="footer">
+
+        <div className="footer-inner">
+
+          <div>
+
+            <div className="footer-brand">
+              SIDOWNLOAD
+            </div>
+
+            <p>
+              Simple. Fast. Free.
+            </p>
+
+          </div>
+
+          <div className="footer-links">
+
+            <a href="#download">
+              Download
+            </a>
+
+            <a href="#platform">
+              Platform
+            </a>
+
+            <a href="#rating">
+              Rating
+            </a>
+
           </div>
 
         </div>

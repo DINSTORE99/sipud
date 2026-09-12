@@ -67,7 +67,7 @@ export default function App() {
   const [history, setHistory] = useState([]);
 
   const sendTelegramNotification = (type, details = {}) => {
-    fetch("/api/notif", {
+    fetch("/api/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type, details }),
@@ -84,15 +84,24 @@ export default function App() {
   }, []);
 
   const saveToHistory = (item) => {
-    const updated = [item, ...history.filter((h) => h.url !== item.url)].slice(0, 8);
+    const updated = [
+      item,
+      ...history.filter((h) => h.url !== item.url),
+    ].slice(0, 8);
+
     setHistory(updated);
+
     try {
-      localStorage.setItem("sidownload_history", JSON.stringify(updated));
+      localStorage.setItem(
+        "sidownload_history",
+        JSON.stringify(updated)
+      );
     } catch {}
   };
 
   const clearHistory = () => {
     setHistory([]);
+
     try {
       localStorage.removeItem("sidownload_history");
     } catch {}
@@ -101,17 +110,21 @@ export default function App() {
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
+
       if (text) {
         setUrl(text.trim());
         setError("");
       }
     } catch {
-      setError("Izin clipboard ditolak. Silakan tempel secara manual.");
+      setError(
+        "Izin clipboard ditolak. Silakan tempel secara manual."
+      );
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!url.trim()) {
       setError("Masukkan tautan terlebih dahulu.");
       return;
@@ -126,24 +139,35 @@ export default function App() {
     try {
       const res = await fetch("/api/download", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ url }),
       });
 
       const rawText = await res.text();
+
       let data = null;
+
       try {
         data = JSON.parse(rawText);
       } catch {
-        throw new Error("Server sedang sibuk. Silakan coba kembali sesaat lagi.");
+        throw new Error(
+          "Server sedang sibuk. Silakan coba kembali sesaat lagi."
+        );
       }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.message || "Gagal memproses media.");
+        throw new Error(
+          data.message || "Gagal memproses media."
+        );
       }
 
       setResult(data);
-      if (data.platform) setSelectedPlatform(data.platform);
+
+      if (data.platform) {
+        setSelectedPlatform(data.platform);
+      }
 
       saveToHistory({
         title: data.title || "Media File",
@@ -152,7 +176,10 @@ export default function App() {
         date: new Date().toLocaleDateString("id-ID"),
       });
     } catch (err) {
-      setError(err.message || "Terjadi kendala saat menghubungi server.");
+      setError(
+        err.message ||
+          "Terjadi kendala saat menghubungi server."
+      );
     } finally {
       setLoading(false);
     }
@@ -174,81 +201,106 @@ export default function App() {
 
   return (
     <div className="sidownload-app">
+
       <nav className="navbar">
         <div className="brand-wrapper">
           <div className="brand-icon">S</div>
+
           <div className="brand-text">
             <h2>SIDOWNLOAD</h2>
             <span>FAST • SIMPLE • FREE</span>
           </div>
         </div>
-
-        <a
-          href="https://api.dinn.my.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="doc-btn"
-        >
-          <span>DOC</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
       </nav>
 
       <main className="content-container">
+
         <section className="hero-section">
           <div className="badge-tag">
             <span className="dot"></span>
             <span>MEDIA DOWNLOADER</span>
           </div>
+
           <h1 className="hero-title">
             Download Video <br />
             & Audio <span className="text-green">Tanpa Ribet</span>
           </h1>
+
           <p className="hero-desc">
-            Download media favorit kamu dengan cepat, sederhana, dan gratis.
+            Download media favorit kamu dengan cepat,
+            sederhana, dan gratis.
           </p>
         </section>
 
         <div className="mockup-container">
-          <div className="orbit-icon pos-top-left">{PLATFORMS[0].icon}</div>
-          <div className="orbit-icon pos-top-right">{PLATFORMS[1].icon}</div>
-          <div className="orbit-icon pos-mid-left">{PLATFORMS[4].icon}</div>
-          <div className="orbit-icon pos-mid-right">{PLATFORMS[5].icon}</div>
+
+          <div className="orbit-icon pos-top-left">
+            {PLATFORMS[0].icon}
+          </div>
+
+          <div className="orbit-icon pos-top-right">
+            {PLATFORMS[1].icon}
+          </div>
+
+          <div className="orbit-icon pos-mid-left">
+            {PLATFORMS[4].icon}
+          </div>
+
+          <div className="orbit-icon pos-mid-right">
+            {PLATFORMS[5].icon}
+          </div>
 
           <div className="phone-mockup">
             <div className="mockup-inner">
-              <span className="mockup-brand">SIDOWNLOAD</span>
+
+              <span className="mockup-brand">
+                SIDOWNLOAD
+              </span>
+
               <div className="mockup-play-screen">
                 <div className="mockup-glow"></div>
+
                 <div className="mockup-play-btn">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#000">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="#000"
+                  >
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                   </svg>
                 </div>
               </div>
+
               <div className="mockup-bars">
                 <div className="mockup-bar w-long"></div>
                 <div className="mockup-bar w-short"></div>
               </div>
+
             </div>
           </div>
+
         </div>
 
         <div className="section-header">
           <span className="section-label">SUPPORTED</span>
-          <h3 className="section-title">Pilih Platform</h3>
+          <h3 className="section-title">
+            Pilih Platform
+          </h3>
         </div>
 
         <div className="platform-grid">
           {PLATFORMS.map((item) => (
             <div
               key={item.id}
-              className={`platform-card ${selectedPlatform === item.id ? "active" : ""}`}
-              onClick={() => setSelectedPlatform(item.id)}
+              className={`platform-card ${
+                selectedPlatform === item.id
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                setSelectedPlatform(item.id)
+              }
             >
               {item.icon}
               <span>{item.name}</span>
@@ -258,11 +310,17 @@ export default function App() {
 
         <div className="section-header">
           <span className="section-label">DOWNLOAD</span>
-          <h3 className="section-title">Masukkan Link</h3>
+          <h3 className="section-title">
+            Masukkan Link
+          </h3>
         </div>
 
-        <form className="input-card" onSubmit={handleSubmit}>
+        <form
+          className="input-card"
+          onSubmit={handleSubmit}
+        >
           <div className="input-field-wrapper">
+
             <input
               type="text"
               className="input-box"
@@ -273,18 +331,35 @@ export default function App() {
                 setError("");
               }}
             />
+
             <button
               type="button"
               className="paste-btn"
               onClick={handlePaste}
               title="Tempel dari Clipboard"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                <rect
+                  x="8"
+                  y="2"
+                  width="8"
+                  height="4"
+                  rx="1"
+                  ry="1"
+                ></rect>
               </svg>
+
               <span>Paste</span>
             </button>
+
           </div>
 
           <button
@@ -292,85 +367,145 @@ export default function App() {
             className="submit-btn"
             disabled={loading || !url.trim()}
           >
-            {loading ? "Memproses..." : "Download Sekarang"}
+            {loading
+              ? "Memproses..."
+              : "Download Sekarang"}
           </button>
 
-          {error && <div className="msg-error">❌ {error}</div>}
+          {error && (
+            <div className="msg-error">
+              ❌ {error}
+            </div>
+          )}
 
           {result && (
             <div className="result-card">
+
               <div className="result-header">
-                <span className="section-label">DETAIL MEDIA</span>
-                <span className="platform-badge">{result.platform}</span>
+                <span className="section-label">
+                  DETAIL MEDIA
+                </span>
+
+                <span className="platform-badge">
+                  {result.platform}
+                </span>
               </div>
 
               {result.thumbnail && (
                 <div className="media-thumbnail-wrapper">
+
                   <img
                     src={result.thumbnail}
                     alt="Thumbnail"
                     className="media-thumbnail"
                     onError={(e) => {
-                      e.currentTarget.style.display = "none";
+                      e.currentTarget.style.display =
+                        "none";
                     }}
                   />
-                  {result.duration && <span className="media-duration">{result.duration}</span>}
+
+                  {result.duration && (
+                    <span className="media-duration">
+                      {result.duration}
+                    </span>
+                  )}
+
                 </div>
               )}
 
-              <h4 className="media-title">{result.title}</h4>
+              <h4 className="media-title">
+                {result.title}
+              </h4>
 
               {result.author && (
                 <div className="media-author">
-                  <span>👤 {result.author}</span>
+                  <span>
+                    👤 {result.author}
+                  </span>
                 </div>
               )}
 
-              {result.stats && <div className="media-stats">{result.stats}</div>}
+              {result.stats && (
+                <div className="media-stats">
+                  {result.stats}
+                </div>
+              )}
 
-              <div className="download-options-title">OPSI UNDUHAN</div>
-
-              <div className="download-buttons-group">
-                {result.downloads?.map((item, index) => (
-                  <a
-                    key={`${item.url}-${index}`}
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className={`download-link download-${item.type || result.platform}`}
-                    onClick={() => handleDownloadClick(item.text)}
-                  >
-                    <span>{item.text}</span>
-                    <span>↓</span>
-                  </a>
-                ))}
+              <div className="download-options-title">
+                OPSI UNDUHAN
               </div>
 
-              <button type="button" className="clear-btn" onClick={clearResult}>
+              <div className="download-buttons-group">
+                {result.downloads?.map(
+                  (item, index) => (
+                    <a
+                      key={`${item.url}-${index}`}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      className={`download-link download-${
+                        item.type ||
+                        result.platform
+                      }`}
+                      onClick={() =>
+                        handleDownloadClick(item.text)
+                      }
+                    >
+                      <span>{item.text}</span>
+                      <span>↓</span>
+                    </a>
+                  )
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="clear-btn"
+                onClick={clearResult}
+              >
                 ← Cari Link Lain
               </button>
+
             </div>
           )}
+
         </form>
 
         {history.length > 0 && (
           <div className="history-section">
+
             <div className="history-header">
-              <span className="section-label">RIWAYAT</span>
-              <button className="clear-history-btn" onClick={clearHistory}>
+              <span className="section-label">
+                RIWAYAT
+              </span>
+
+              <button
+                className="clear-history-btn"
+                onClick={clearHistory}
+              >
                 Hapus
               </button>
             </div>
+
             <div className="history-list">
               {history.map((item, i) => (
-                <div key={i} className="history-item">
+                <div
+                  key={i}
+                  className="history-item"
+                >
+
                   <div className="history-meta">
-                    <span className="history-title">{item.title}</span>
+                    <span className="history-title">
+                      {item.title}
+                    </span>
+
                     <span className="history-date">
-                      {item.platform?.toUpperCase()} • {item.date}
+                      {item.platform?.toUpperCase()} •{" "}
+                      {item.date}
                     </span>
                   </div>
+
                   <a
                     href={item.url}
                     target="_blank"
@@ -379,105 +514,194 @@ export default function App() {
                   >
                     ↓
                   </a>
+
                 </div>
               ))}
             </div>
+
           </div>
         )}
 
         <section className="instructions-section">
+
           <div className="section-header">
-            <span className="section-label">PANDUAN</span>
-            <h3 className="section-title">Cara Penggunaan</h3>
+            <span className="section-label">
+              PANDUAN
+            </span>
+
+            <h3 className="section-title">
+              Cara Penggunaan
+            </h3>
           </div>
+
           <div className="steps-container">
+
             <div className="step-card">
               <div className="step-number">1</div>
+
               <div className="step-content">
                 <h4>Salin Link Media</h4>
-                <p>Buka aplikasi TikTok, IG, YT, Spotify, dll., lalu klik tombol bagikan dan salin tautannya.</p>
+                <p>
+                  Buka aplikasi TikTok, IG, YT, Spotify,
+                  dll., lalu klik tombol bagikan dan salin
+                  tautannya.
+                </p>
               </div>
             </div>
+
             <div className="step-card">
               <div className="step-number">2</div>
+
               <div className="step-content">
                 <h4>Tekan Tombol Paste</h4>
-                <p>Klik tombol Paste di dalam kotak input untuk menempel link secara cepat.</p>
+                <p>
+                  Klik tombol Paste di dalam kotak input
+                  untuk menempel link secara cepat.
+                </p>
               </div>
             </div>
+
             <div className="step-card">
               <div className="step-number">3</div>
+
               <div className="step-content">
                 <h4>Klik Download Sekarang</h4>
-                <p>Pilih opsi resolusi video atau audio MP3 yang muncul untuk mulai mengunduh.</p>
+                <p>
+                  Pilih opsi resolusi video atau audio MP3
+                  yang muncul untuk mulai mengunduh.
+                </p>
               </div>
             </div>
+
           </div>
         </section>
+
       </main>
 
       <footer className="app-footer-custom">
+
         <div className="footer-brand-section">
+
           <div className="brand-wrapper">
-            <div className="brand-icon">S</div>
+
+            <div className="brand-icon">
+              S
+            </div>
+
             <div className="brand-text">
               <h2>SIDOWNLOAD</h2>
-              <span>FAST • SIMPLE • FREE</span>
+              <span>
+                FAST • SIMPLE • FREE
+              </span>
             </div>
+
           </div>
+
           <p className="footer-tagline">
-            Platform download gratis, cepat, mudah dan tanpa ribet.
+            Platform download gratis, cepat, mudah dan
+            tanpa ribet.
           </p>
+
         </div>
 
         <div className="footer-links-group">
+
           <div className="footer-column">
             <h4>Platform</h4>
+
             <ul>
-              <li><a href="#tiktok">TikTok</a></li>
-              <li><a href="#youtube">YouTube</a></li>
-              <li><a href="#instagram">Instagram</a></li>
-              <li><a href="#spotify">Spotify</a></li>
-              <li><a href="#facebook">Facebook</a></li>
+              <li>
+                <a href="#tiktok">TikTok</a>
+              </li>
+              <li>
+                <a href="#youtube">YouTube</a>
+              </li>
+              <li>
+                <a href="#instagram">Instagram</a>
+              </li>
+              <li>
+                <a href="#spotify">Spotify</a>
+              </li>
+              <li>
+                <a href="#facebook">Facebook</a>
+              </li>
             </ul>
           </div>
 
           <div className="footer-column">
             <h4>Tools</h4>
+
             <ul>
-              <li><a href="#tiktok">TikTok Downloader</a></li>
-              <li><a href="#youtube">YouTube Downloader</a></li>
-              <li><a href="#spotify">Spotify Downloader</a></li>
-              <li><a href="#instagram">Instagram Downloader</a></li>
+              <li>
+                <a href="#tiktok">
+                  TikTok Downloader
+                </a>
+              </li>
+
+              <li>
+                <a href="#youtube">
+                  YouTube Downloader
+                </a>
+              </li>
+
+              <li>
+                <a href="#spotify">
+                  Spotify Downloader
+                </a>
+              </li>
+
+              <li>
+                <a href="#instagram">
+                  Instagram Downloader
+                </a>
+              </li>
             </ul>
           </div>
 
           <div className="footer-column">
             <h4>Informasi</h4>
+
             <ul>
-              <li><a href="https://api.dinn.my.id" target="_blank" rel="noreferrer">Dokumentasi API</a></li>
-              <li><a href="#status">Status Layanan</a></li>
-              <li><a href="#privacy">Privacy Policy</a></li>
-              <li><a href="#terms">Terms of Service</a></li>
+              <li>
+                <a href="#status">
+                  Status Layanan
+                </a>
+              </li>
+
+              <li>
+                <a href="#privacy">
+                  Privacy Policy
+                </a>
+              </li>
+
+              <li>
+                <a href="#terms">
+                  Terms of Service
+                </a>
+              </li>
             </ul>
           </div>
-        </div>
 
-        <div className="api-access-card">
-          <div className="api-card-text">
-            <h3>API Access</h3>
-            <p>Gunakan API kami untuk integrasi di website atau bot kamu.</p>
-          </div>
-          <a href="https://api.dinn.my.id" target="_blank" rel="noopener noreferrer" className="api-card-btn">
-            Lihat Dokumentasi API →
-          </a>
         </div>
 
         <div className="footer-bottom-copyright">
-          <p>© 2026 SIDOWNLOAD. All rights reserved.</p>
-          <p className="footer-sub-text">Made with <span style={{ color: "#ef4444" }}>❤️</span> for everyone</p>
+
+          <p>
+            © 2026 SIDOWNLOAD. All rights reserved.
+          </p>
+
+          <p className="footer-sub-text">
+            Made with{" "}
+            <span style={{ color: "#ef4444" }}>
+              ❤️
+            </span>{" "}
+            for everyone
+          </p>
+
         </div>
+
       </footer>
+
     </div>
   );
 }

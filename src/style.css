@@ -1549,3 +1549,136 @@ a {
     animation: none !important;
   }
 }
+/* ==========================================
+   RESULT & DOWNLOAD CARD STYLES
+   ========================================== */
+
+.result-card {
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.platform-badge {
+  text-transform: uppercase;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.media-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: #09090b;
+}
+
+.media-thumbnail {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.media-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.media-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f4f4f5;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.media-author {
+  font-size: 13px;
+  color: #a1a1aa;
+  margin-bottom: 6px;
+}
+
+.media-stats {
+  font-size: 12px;
+  color: #71717a;
+  margin-bottom: 16px;
+}
+
+.download-options-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #71717a;
+  margin-bottom: 10px;
+}
+
+.download-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.download-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.download-link:hover {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+.clear-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: #a1a1aa;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}

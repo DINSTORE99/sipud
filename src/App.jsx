@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import "./style.css";
 
+// ==========================================
+// LINK APK
+// ==========================================
+// Nanti tinggal ganti bagian ini:
+//
+// const APK_LINK = "https://sfile.mobi/xxxxx";
+//
+// Kalau belum punya link, biarkan kosong.
+const APK_LINK = "";
+
 const PLATFORMS = [
   {
     id: "tiktok",
@@ -67,10 +77,15 @@ export default function App() {
   const [history, setHistory] = useState([]);
 
   const sendTelegramNotification = (type, details = {}) => {
-    fetch("/api/notify", {
+    fetch("/api/notif", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, details }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type,
+        details,
+      }),
     }).catch(() => {});
   };
 
@@ -78,15 +93,22 @@ export default function App() {
     sendTelegramNotification("visit");
 
     try {
-      const saved = localStorage.getItem("sidownload_history");
-      if (saved) setHistory(JSON.parse(saved));
+      const saved = localStorage.getItem(
+        "sidownload_history"
+      );
+
+      if (saved) {
+        setHistory(JSON.parse(saved));
+      }
     } catch {}
   }, []);
 
   const saveToHistory = (item) => {
     const updated = [
       item,
-      ...history.filter((h) => h.url !== item.url),
+      ...history.filter(
+        (h) => h.url !== item.url
+      ),
     ].slice(0, 8);
 
     setHistory(updated);
@@ -103,13 +125,16 @@ export default function App() {
     setHistory([]);
 
     try {
-      localStorage.removeItem("sidownload_history");
+      localStorage.removeItem(
+        "sidownload_history"
+      );
     } catch {}
   };
 
   const handlePaste = async () => {
     try {
-      const text = await navigator.clipboard.readText();
+      const text =
+        await navigator.clipboard.readText();
 
       if (text) {
         setUrl(text.trim());
@@ -126,7 +151,9 @@ export default function App() {
     e.preventDefault();
 
     if (!url.trim()) {
-      setError("Masukkan tautan terlebih dahulu.");
+      setError(
+        "Masukkan tautan terlebih dahulu."
+      );
       return;
     }
 
@@ -134,18 +161,27 @@ export default function App() {
     setError("");
     setResult(null);
 
-    sendTelegramNotification("process", { url });
+    sendTelegramNotification("process", {
+      url,
+    });
 
     try {
-      const res = await fetch("/api/download", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url }),
-      });
+      const res = await fetch(
+        "/api/download",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            url,
+          }),
+        }
+      );
 
-      const rawText = await res.text();
+      const rawText =
+        await res.text();
 
       let data = null;
 
@@ -159,21 +195,32 @@ export default function App() {
 
       if (!res.ok || !data.success) {
         throw new Error(
-          data.message || "Gagal memproses media."
+          data.message ||
+            "Gagal memproses media."
         );
       }
 
       setResult(data);
 
       if (data.platform) {
-        setSelectedPlatform(data.platform);
+        setSelectedPlatform(
+          data.platform
+        );
       }
 
       saveToHistory({
-        title: data.title || "Media File",
-        platform: data.platform,
-        url: data.downloads?.[0]?.url || url,
-        date: new Date().toLocaleDateString("id-ID"),
+        title:
+          data.title ||
+          "Media File",
+        platform:
+          data.platform,
+        url:
+          data.downloads?.[0]?.url ||
+          url,
+        date:
+          new Date().toLocaleDateString(
+            "id-ID"
+          ),
       });
     } catch (err) {
       setError(
@@ -185,12 +232,19 @@ export default function App() {
     }
   };
 
-  const handleDownloadClick = (label) => {
-    sendTelegramNotification("downloaded", {
-      title: result?.title,
-      platform: result?.platform,
-      label,
-    });
+  const handleDownloadClick = (
+    label
+  ) => {
+    sendTelegramNotification(
+      "downloaded",
+      {
+        title:
+          result?.title,
+        platform:
+          result?.platform,
+        label,
+      }
+    );
   };
 
   const clearResult = () => {
@@ -199,38 +253,149 @@ export default function App() {
     setError("");
   };
 
+  const handleInstallAPK = () => {
+    if (!APK_LINK.trim()) {
+      alert(
+        "Link APK belum diisi. Silakan isi APK_LINK di App.jsx."
+      );
+      return;
+    }
+
+    sendTelegramNotification(
+      "apk_install",
+      {
+        url: APK_LINK,
+      }
+    );
+
+    window.open(
+      APK_LINK,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
   return (
     <div className="sidownload-app">
 
+      {/* ======================================
+          NAVBAR
+      ====================================== */}
+
       <nav className="navbar">
+
         <div className="brand-wrapper">
-          <div className="brand-icon">S</div>
+
+          <div className="brand-icon">
+            S
+          </div>
 
           <div className="brand-text">
             <h2>SIDOWNLOAD</h2>
-            <span>FAST • SIMPLE • FREE</span>
+
+            <span>
+              FAST • SIMPLE • FREE
+            </span>
           </div>
+
         </div>
+
       </nav>
 
       <main className="content-container">
 
+        {/* ======================================
+            HERO
+        ====================================== */}
+
         <section className="hero-section">
+
           <div className="badge-tag">
             <span className="dot"></span>
-            <span>MEDIA DOWNLOADER</span>
+
+            <span>
+              MEDIA DOWNLOADER
+            </span>
           </div>
 
           <h1 className="hero-title">
-            Download Video <br />
-            & Audio <span className="text-green">Tanpa Ribet</span>
+            Download Video
+            <br />
+            & Audio{" "}
+            <span className="text-green">
+              Tanpa Ribet
+            </span>
           </h1>
 
           <p className="hero-desc">
-            Download media favorit kamu dengan cepat,
-            sederhana, dan gratis.
+            Download media favorit kamu
+            dengan cepat, sederhana,
+            dan gratis.
           </p>
+
         </section>
+
+        {/* ======================================
+            APK INSTALL
+        ====================================== */}
+
+        <section className="apk-install-card">
+
+          <div className="apk-icon">
+
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <rect
+                x="5"
+                y="2"
+                width="14"
+                height="20"
+                rx="2"
+              />
+
+              <path d="M9 18h6" />
+            </svg>
+
+          </div>
+
+          <div className="apk-info">
+
+            <span className="section-label">
+              APLIKASI RESMI
+            </span>
+
+            <h3>
+              Install SIDOWNLOAD APK
+            </h3>
+
+            <p>
+              Gunakan aplikasi SIDOWNLOAD
+              untuk pengalaman download
+              yang lebih praktis.
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            className="apk-install-btn"
+            onClick={handleInstallAPK}
+          >
+            <span>📱</span>
+            <span>Install APK</span>
+          </button>
+
+        </section>
+
+        {/* ======================================
+            PHONE MOCKUP
+        ====================================== */}
 
         <div className="mockup-container">
 
@@ -251,6 +416,7 @@ export default function App() {
           </div>
 
           <div className="phone-mockup">
+
             <div className="mockup-inner">
 
               <span className="mockup-brand">
@@ -258,9 +424,11 @@ export default function App() {
               </span>
 
               <div className="mockup-play-screen">
+
                 <div className="mockup-glow"></div>
 
                 <div className="mockup-play-btn">
+
                   <svg
                     width="14"
                     height="14"
@@ -269,56 +437,97 @@ export default function App() {
                   >
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                   </svg>
+
                 </div>
+
               </div>
 
               <div className="mockup-bars">
+
                 <div className="mockup-bar w-long"></div>
+
                 <div className="mockup-bar w-short"></div>
+
               </div>
 
             </div>
+
           </div>
 
         </div>
 
+        {/* ======================================
+            PLATFORM
+        ====================================== */}
+
         <div className="section-header">
-          <span className="section-label">SUPPORTED</span>
+
+          <span className="section-label">
+            SUPPORTED
+          </span>
+
           <h3 className="section-title">
             Pilih Platform
           </h3>
+
         </div>
 
         <div className="platform-grid">
-          {PLATFORMS.map((item) => (
-            <div
-              key={item.id}
-              className={`platform-card ${
-                selectedPlatform === item.id
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() =>
-                setSelectedPlatform(item.id)
-              }
-            >
-              {item.icon}
-              <span>{item.name}</span>
-            </div>
-          ))}
+
+          {PLATFORMS.map(
+            (item) => (
+
+              <div
+                key={item.id}
+                className={`platform-card ${
+                  selectedPlatform ===
+                  item.id
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() =>
+                  setSelectedPlatform(
+                    item.id
+                  )
+                }
+              >
+
+                {item.icon}
+
+                <span>
+                  {item.name}
+                </span>
+
+              </div>
+
+            )
+          )}
+
         </div>
 
+        {/* ======================================
+            DOWNLOAD FORM
+        ====================================== */}
+
         <div className="section-header">
-          <span className="section-label">DOWNLOAD</span>
+
+          <span className="section-label">
+            DOWNLOAD
+          </span>
+
           <h3 className="section-title">
             Masukkan Link
           </h3>
+
         </div>
 
         <form
           className="input-card"
-          onSubmit={handleSubmit}
+          onSubmit={
+            handleSubmit
+          }
         >
+
           <div className="input-field-wrapper">
 
             <input
@@ -327,7 +536,9 @@ export default function App() {
               placeholder="Tempel tautan video / musik di sini..."
               value={url}
               onChange={(e) => {
-                setUrl(e.target.value);
+                setUrl(
+                  e.target.value
+                );
                 setError("");
               }}
             />
@@ -335,9 +546,12 @@ export default function App() {
             <button
               type="button"
               className="paste-btn"
-              onClick={handlePaste}
+              onClick={
+                handlePaste
+              }
               title="Tempel dari Clipboard"
             >
+
               <svg
                 width="14"
                 height="14"
@@ -347,6 +561,7 @@ export default function App() {
                 strokeWidth="2.2"
               >
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+
                 <rect
                   x="8"
                   y="2"
@@ -357,7 +572,10 @@ export default function App() {
                 ></rect>
               </svg>
 
-              <span>Paste</span>
+              <span>
+                Paste
+              </span>
+
             </button>
 
           </div>
@@ -365,7 +583,10 @@ export default function App() {
           <button
             type="submit"
             className="submit-btn"
-            disabled={loading || !url.trim()}
+            disabled={
+              loading ||
+              !url.trim()
+            }
           >
             {loading
               ? "Memproses..."
@@ -378,10 +599,16 @@ export default function App() {
             </div>
           )}
 
+          {/* ======================================
+              RESULT
+          ====================================== */}
+
           {result && (
+
             <div className="result-card">
 
               <div className="result-header">
+
                 <span className="section-label">
                   DETAIL MEDIA
                 </span>
@@ -389,13 +616,17 @@ export default function App() {
                 <span className="platform-badge">
                   {result.platform}
                 </span>
+
               </div>
 
               {result.thumbnail && (
+
                 <div className="media-thumbnail-wrapper">
 
                   <img
-                    src={result.thumbnail}
+                    src={
+                      result.thumbnail
+                    }
                     alt="Thumbnail"
                     className="media-thumbnail"
                     onError={(e) => {
@@ -406,11 +637,14 @@ export default function App() {
 
                   {result.duration && (
                     <span className="media-duration">
-                      {result.duration}
+                      {
+                        result.duration
+                      }
                     </span>
                   )}
 
                 </div>
+
               )}
 
               <h4 className="media-title">
@@ -420,7 +654,8 @@ export default function App() {
               {result.author && (
                 <div className="media-author">
                   <span>
-                    👤 {result.author}
+                    👤{" "}
+                    {result.author}
                   </span>
                 </div>
               )}
@@ -436,11 +671,18 @@ export default function App() {
               </div>
 
               <div className="download-buttons-group">
+
                 {result.downloads?.map(
-                  (item, index) => (
+                  (
+                    item,
+                    index
+                  ) => (
+
                     <a
                       key={`${item.url}-${index}`}
-                      href={item.url}
+                      href={
+                        item.url
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       download
@@ -449,82 +691,125 @@ export default function App() {
                         result.platform
                       }`}
                       onClick={() =>
-                        handleDownloadClick(item.text)
+                        handleDownloadClick(
+                          item.text
+                        )
                       }
                     >
-                      <span>{item.text}</span>
-                      <span>↓</span>
+
+                      <span>
+                        {item.text}
+                      </span>
+
+                      <span>
+                        ↓
+                      </span>
+
                     </a>
+
                   )
                 )}
+
               </div>
 
               <button
                 type="button"
                 className="clear-btn"
-                onClick={clearResult}
+                onClick={
+                  clearResult
+                }
               >
                 ← Cari Link Lain
               </button>
 
             </div>
+
           )}
 
         </form>
 
+        {/* ======================================
+            HISTORY
+        ====================================== */}
+
         {history.length > 0 && (
+
           <div className="history-section">
 
             <div className="history-header">
+
               <span className="section-label">
                 RIWAYAT
               </span>
 
               <button
                 className="clear-history-btn"
-                onClick={clearHistory}
+                onClick={
+                  clearHistory
+                }
               >
                 Hapus
               </button>
+
             </div>
 
             <div className="history-list">
-              {history.map((item, i) => (
-                <div
-                  key={i}
-                  className="history-item"
-                >
 
-                  <div className="history-meta">
-                    <span className="history-title">
-                      {item.title}
-                    </span>
+              {history.map(
+                (
+                  item,
+                  i
+                ) => (
 
-                    <span className="history-date">
-                      {item.platform?.toUpperCase()} •{" "}
-                      {item.date}
-                    </span>
+                  <div
+                    key={i}
+                    className="history-item"
+                  >
+
+                    <div className="history-meta">
+
+                      <span className="history-title">
+                        {item.title}
+                      </span>
+
+                      <span className="history-date">
+                        {item.platform?.toUpperCase()}
+                        {" • "}
+                        {item.date}
+                      </span>
+
+                    </div>
+
+                    <a
+                      href={
+                        item.url
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="history-dl-btn"
+                    >
+                      ↓
+                    </a>
+
                   </div>
 
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="history-dl-btn"
-                  >
-                    ↓
-                  </a>
+                )
+              )}
 
-                </div>
-              ))}
             </div>
 
           </div>
+
         )}
+
+        {/* ======================================
+            INSTRUCTIONS
+        ====================================== */}
 
         <section className="instructions-section">
 
           <div className="section-header">
+
             <span className="section-label">
               PANDUAN
             </span>
@@ -532,51 +817,88 @@ export default function App() {
             <h3 className="section-title">
               Cara Penggunaan
             </h3>
+
           </div>
 
           <div className="steps-container">
 
             <div className="step-card">
-              <div className="step-number">1</div>
+
+              <div className="step-number">
+                1
+              </div>
 
               <div className="step-content">
-                <h4>Salin Link Media</h4>
+
+                <h4>
+                  Salin Link Media
+                </h4>
+
                 <p>
-                  Buka aplikasi TikTok, IG, YT, Spotify,
-                  dll., lalu klik tombol bagikan dan salin
-                  tautannya.
+                  Buka aplikasi TikTok,
+                  IG, YT, Spotify,
+                  dan lainnya, lalu
+                  salin tautannya.
                 </p>
+
               </div>
+
             </div>
 
             <div className="step-card">
-              <div className="step-number">2</div>
+
+              <div className="step-number">
+                2
+              </div>
 
               <div className="step-content">
-                <h4>Tekan Tombol Paste</h4>
+
+                <h4>
+                  Tekan Tombol Paste
+                </h4>
+
                 <p>
-                  Klik tombol Paste di dalam kotak input
-                  untuk menempel link secara cepat.
+                  Klik tombol Paste
+                  untuk menempel link
+                  secara cepat.
                 </p>
+
               </div>
+
             </div>
 
             <div className="step-card">
-              <div className="step-number">3</div>
+
+              <div className="step-number">
+                3
+              </div>
 
               <div className="step-content">
-                <h4>Klik Download Sekarang</h4>
+
+                <h4>
+                  Klik Download
+                </h4>
+
                 <p>
-                  Pilih opsi resolusi video atau audio MP3
-                  yang muncul untuk mulai mengunduh.
+                  Pilih opsi video
+                  atau audio yang
+                  tersedia untuk
+                  mulai mengunduh.
                 </p>
+
               </div>
+
             </div>
 
           </div>
+
         </section>
 
       </main>
+
+      {/* ======================================
+          FOOTER
+      ====================================== */}
 
       <footer className="app-footer-custom">
 
@@ -589,17 +911,22 @@ export default function App() {
             </div>
 
             <div className="brand-text">
-              <h2>SIDOWNLOAD</h2>
+
+              <h2>
+                SIDOWNLOAD
+              </h2>
+
               <span>
                 FAST • SIMPLE • FREE
               </span>
+
             </div>
 
           </div>
 
           <p className="footer-tagline">
-            Platform download gratis, cepat, mudah dan
-            tanpa ribet.
+            Platform download gratis,
+            cepat, mudah dan tanpa ribet.
           </p>
 
         </div>
@@ -607,31 +934,55 @@ export default function App() {
         <div className="footer-links-group">
 
           <div className="footer-column">
-            <h4>Platform</h4>
+
+            <h4>
+              Platform
+            </h4>
 
             <ul>
+
               <li>
-                <a href="#tiktok">TikTok</a>
+                <a href="#tiktok">
+                  TikTok
+                </a>
               </li>
+
               <li>
-                <a href="#youtube">YouTube</a>
+                <a href="#youtube">
+                  YouTube
+                </a>
               </li>
+
               <li>
-                <a href="#instagram">Instagram</a>
+                <a href="#instagram">
+                  Instagram
+                </a>
               </li>
+
               <li>
-                <a href="#spotify">Spotify</a>
+                <a href="#spotify">
+                  Spotify
+                </a>
               </li>
+
               <li>
-                <a href="#facebook">Facebook</a>
+                <a href="#facebook">
+                  Facebook
+                </a>
               </li>
+
             </ul>
+
           </div>
 
           <div className="footer-column">
-            <h4>Tools</h4>
+
+            <h4>
+              Tools
+            </h4>
 
             <ul>
+
               <li>
                 <a href="#tiktok">
                   TikTok Downloader
@@ -655,13 +1006,19 @@ export default function App() {
                   Instagram Downloader
                 </a>
               </li>
+
             </ul>
+
           </div>
 
           <div className="footer-column">
-            <h4>Informasi</h4>
+
+            <h4>
+              Informasi
+            </h4>
 
             <ul>
+
               <li>
                 <a href="#status">
                   Status Layanan
@@ -679,7 +1036,9 @@ export default function App() {
                   Terms of Service
                 </a>
               </li>
+
             </ul>
+
           </div>
 
         </div>
@@ -687,12 +1046,17 @@ export default function App() {
         <div className="footer-bottom-copyright">
 
           <p>
-            © 2026 SIDOWNLOAD. All rights reserved.
+            © 2026 SIDOWNLOAD.
+            All rights reserved.
           </p>
 
           <p className="footer-sub-text">
             Made with{" "}
-            <span style={{ color: "#ef4444" }}>
+            <span
+              style={{
+                color: "#ef4444",
+              }}
+            >
               ❤️
             </span>{" "}
             for everyone

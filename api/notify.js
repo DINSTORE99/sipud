@@ -1,5 +1,5 @@
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "8311271231:AAHzIXX4OuHchJbMGSXoavBxXkjNQg28U0g";
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID || "6452266025";
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import "./style.css";
 
+// ==========================================
+// LINK APK
+// ==========================================
+const APK_LINK = "";
+
 const PLATFORMS = [
   {
     id: "tiktok",
@@ -67,7 +72,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
 
-  // State Supabase: Pengunjung, Rating, Komentar
+  // State Supabase
   const [visitorCount, setVisitorCount] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewName, setReviewName] = useState("");
@@ -105,7 +110,6 @@ export default function App() {
       if (saved) setHistory(JSON.parse(saved));
     } catch {}
 
-    // Inisialisasi visitor counter Supabase
     const initVisitor = async () => {
       try {
         const hasCounted = sessionStorage.getItem("sidownload_visitor_counted");
@@ -217,6 +221,16 @@ export default function App() {
     setError("");
   };
 
+  const handleInstallAPK = () => {
+    if (!APK_LINK.trim()) {
+      alert("Link APK belum diisi. Silakan isi APK_LINK di App.jsx.");
+      return;
+    }
+
+    sendTelegramNotification("apk_install", { url: APK_LINK });
+    window.open(APK_LINK, "_blank", "noopener,noreferrer");
+  };
+
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!reviewName.trim() || !reviewComment.trim()) return;
@@ -263,20 +277,6 @@ export default function App() {
             <span>FAST • SIMPLE • FREE</span>
           </div>
         </div>
-
-        <a
-          href="https://api.dinn.my.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="doc-btn"
-        >
-          <span>DOC</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
       </nav>
 
       <main className="content-container">
@@ -301,6 +301,24 @@ export default function App() {
               <span>⭐ {avgRating} / 5 ({reviews.length} Ulasan)</span>
             </div>
           </div>
+        </section>
+
+        <section className="apk-install-card">
+          <div className="apk-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" />
+              <path d="M9 18h6" />
+            </svg>
+          </div>
+          <div className="apk-info">
+            <span className="section-label">APLIKASI RESMI</span>
+            <h3>Install SIDOWNLOAD APK</h3>
+            <p>Gunakan aplikasi SIDOWNLOAD untuk pengalaman download yang lebih praktis.</p>
+          </div>
+          <button type="button" className="apk-install-btn" onClick={handleInstallAPK}>
+            <span>📱</span>
+            <span>Install APK</span>
+          </button>
         </section>
 
         <div className="mockup-container">
@@ -505,7 +523,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Bagian Ulasan, Rating, dan Komentar */}
+        {/* Bagian Ulasan & Komentar */}
         <section className="instructions-section" style={{ marginTop: "40px" }}>
           <div className="section-header">
             <span className="section-label">TESTIMONI</span>
@@ -534,7 +552,7 @@ export default function App() {
                     border: "1px solid #333",
                     padding: "8px 12px",
                     borderRadius: "8px",
-                    outline: "none"
+                    outline: "none",
                   }}
                 >
                   <option value="5">⭐⭐⭐⭐⭐ (5 - Sangat Bagus)</option>
@@ -596,7 +614,7 @@ export default function App() {
                     {new Date(item.created_at).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",
-                      year: "numeric"
+                      year: "numeric",
                     })}
                   </span>
                 </div>
@@ -618,49 +636,6 @@ export default function App() {
           <p className="footer-tagline">
             Platform download gratis, cepat, mudah dan tanpa ribet.
           </p>
-        </div>
-
-        <div className="footer-links-group">
-          <div className="footer-column">
-            <h4>Platform</h4>
-            <ul>
-              <li><a href="#tiktok">TikTok</a></li>
-              <li><a href="#youtube">YouTube</a></li>
-              <li><a href="#instagram">Instagram</a></li>
-              <li><a href="#spotify">Spotify</a></li>
-              <li><a href="#facebook">Facebook</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-column">
-            <h4>Tools</h4>
-            <ul>
-              <li><a href="#tiktok">TikTok Downloader</a></li>
-              <li><a href="#youtube">YouTube Downloader</a></li>
-              <li><a href="#spotify">Spotify Downloader</a></li>
-              <li><a href="#instagram">Instagram Downloader</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-column">
-            <h4>Informasi</h4>
-            <ul>
-              <li><a href="https://api.dinn.my.id" target="_blank" rel="noreferrer">Dokumentasi API</a></li>
-              <li><a href="#status">Status Layanan</a></li>
-              <li><a href="#privacy">Privacy Policy</a></li>
-              <li><a href="#terms">Terms of Service</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="api-access-card">
-          <div className="api-card-text">
-            <h3>API Access</h3>
-            <p>Gunakan API kami untuk integrasi di website atau bot kamu.</p>
-          </div>
-          <a href="https://api.dinn.my.id" target="_blank" rel="noopener noreferrer" className="api-card-btn">
-            Lihat Dokumentasi API →
-          </a>
         </div>
 
         <div className="footer-bottom-copyright">

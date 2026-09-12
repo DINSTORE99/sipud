@@ -706,22 +706,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* KARTU PROMOSI APK */}
-        <div className="api-access-card">
-          <div className="api-card-text">
-            <h3>📱 SIDOWNLOAD Mobile APK</h3>
-            <p>Unduh dan instal aplikasi resmi kami untuk kemudahan mendownload media langsung dari smartphone Anda.</p>
-          </div>
-          <button
-            type="button"
-            className="api-card-btn"
-            onClick={handleDownloadAPK}
-            style={{ border: "none", cursor: "pointer" }}
-          >
-            Download APK Sekarang ↓
-          </button>
-        </div>
-
+        
         <div className="footer-bottom-copyright">
           <p>© 2026 SIDOWNLOAD. All rights reserved.</p>
           <p className="footer-sub-text">Made with <span style={{ color: "#ef4444" }}>❤️</span> for everyone</p>

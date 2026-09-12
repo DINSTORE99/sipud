@@ -2,11 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import "./style.css";
 
-// ==========================================
-// LINK APK
-// ==========================================
-const APK_LINK = ""; // Isi dengan tautan APK Anda jika sudah tersedia
-
 const PLATFORMS = [
   {
     id: "tiktok",
@@ -72,7 +67,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
 
-  // State Supabase: Pengunjung, Rating, Komentar
+  // Supabase State
   const [visitorCount, setVisitorCount] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [reviewName, setReviewName] = useState("");
@@ -133,24 +128,15 @@ export default function App() {
   }, []);
 
   const saveToHistory = (item) => {
-    const updated = [
-      item,
-      ...history.filter((h) => h.url !== item.url),
-    ].slice(0, 8);
-
+    const updated = [item, ...history.filter((h) => h.url !== item.url)].slice(0, 8);
     setHistory(updated);
-
     try {
-      localStorage.setItem(
-        "sidownload_history",
-        JSON.stringify(updated)
-      );
+      localStorage.setItem("sidownload_history", JSON.stringify(updated));
     } catch {}
   };
 
   const clearHistory = () => {
     setHistory([]);
-
     try {
       localStorage.removeItem("sidownload_history");
     } catch {}
@@ -159,7 +145,6 @@ export default function App() {
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-
       if (text) {
         setUrl(text.trim());
         setError("");
@@ -171,7 +156,6 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!url.trim()) {
       setError("Masukkan tautan terlebih dahulu.");
       return;
@@ -186,16 +170,12 @@ export default function App() {
     try {
       const res = await fetch("/api/download", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url }),
       });
 
       const rawText = await res.text();
-
       let data = null;
-
       try {
         data = JSON.parse(rawText);
       } catch {
@@ -207,10 +187,7 @@ export default function App() {
       }
 
       setResult(data);
-
-      if (data.platform) {
-        setSelectedPlatform(data.platform);
-      }
+      if (data.platform) setSelectedPlatform(data.platform);
 
       saveToHistory({
         title: data.title || "Media File",
@@ -237,16 +214,6 @@ export default function App() {
     setUrl("");
     setResult(null);
     setError("");
-  };
-
-  const handleInstallAPK = () => {
-    if (!APK_LINK.trim()) {
-      alert("Link APK belum diisi.");
-      return;
-    }
-
-    sendTelegramNotification("apk_install", { url: APK_LINK });
-    window.open(APK_LINK, "_blank", "noopener,noreferrer");
   };
 
   const handleReviewSubmit = async (e) => {
@@ -287,7 +254,7 @@ export default function App() {
 
   return (
     <div className="sidownload-app">
-      {/* NAVBAR DENGAN JUMLAH PENGUNJUNG DI ATAS KANAN */}
+      {/* NAVBAR DENGAN PENGUNJUNG DI ATAS KANAN */}
       <nav className="navbar">
         <div className="brand-wrapper">
           <div className="brand-icon">S</div>
@@ -297,16 +264,10 @@ export default function App() {
           </div>
         </div>
 
-        <div
-          className="badge-tag"
-          style={{
-            margin: 0,
-            border: "1px solid rgba(255,255,255,0.15)",
-            background: "rgba(255,255,255,0.05)",
-          }}
-        >
-          <span style={{ fontSize: "12px", color: "#22c55e", fontWeight: "600" }}>
-            👁️ {visitorCount !== null ? `${visitorCount.toLocaleString()} Pengunjung` : "Memuat..."}
+        <div className="visitor-badge-compact" title="Total Pengunjung">
+          <span className="visitor-icon">👁️</span>
+          <span className="visitor-count">
+            {visitorCount !== null ? visitorCount.toLocaleString() : "..."}
           </span>
         </div>
       </nav>
@@ -317,12 +278,10 @@ export default function App() {
             <span className="dot"></span>
             <span>MEDIA DOWNLOADER</span>
           </div>
-
           <h1 className="hero-title">
             Download Video <br />
             & Audio <span className="text-green">Tanpa Ribet</span>
           </h1>
-
           <p className="hero-desc">
             Download media favorit kamu dengan cepat, sederhana, dan gratis.
           </p>
@@ -362,9 +321,7 @@ export default function App() {
           {PLATFORMS.map((item) => (
             <div
               key={item.id}
-              className={`platform-card ${
-                selectedPlatform === item.id ? "active" : ""
-              }`}
+              className={`platform-card ${selectedPlatform === item.id ? "active" : ""}`}
               onClick={() => setSelectedPlatform(item.id)}
             >
               {item.icon}
@@ -390,21 +347,13 @@ export default function App() {
                 setError("");
               }}
             />
-
             <button
               type="button"
               className="paste-btn"
               onClick={handlePaste}
               title="Tempel dari Clipboard"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-              >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
               </svg>
@@ -439,9 +388,7 @@ export default function App() {
                       e.currentTarget.style.display = "none";
                     }}
                   />
-                  {result.duration && (
-                    <span className="media-duration">{result.duration}</span>
-                  )}
+                  {result.duration && <span className="media-duration">{result.duration}</span>}
                 </div>
               )}
 
@@ -453,9 +400,7 @@ export default function App() {
                 </div>
               )}
 
-              {result.stats && (
-                <div className="media-stats">{result.stats}</div>
-              )}
+              {result.stats && <div className="media-stats">{result.stats}</div>}
 
               <div className="download-options-title">OPSI UNDUHAN</div>
 
@@ -467,9 +412,7 @@ export default function App() {
                     target="_blank"
                     rel="noopener noreferrer"
                     download
-                    className={`download-link download-${
-                      item.type || result.platform
-                    }`}
+                    className={`download-link download-${item.type || result.platform}`}
                     onClick={() => handleDownloadClick(item.text)}
                   >
                     <span>{item.text}</span>
@@ -493,7 +436,6 @@ export default function App() {
                 Hapus
               </button>
             </div>
-
             <div className="history-list">
               {history.map((item, i) => (
                 <div key={i} className="history-item">
@@ -503,7 +445,6 @@ export default function App() {
                       {item.platform?.toUpperCase()} • {item.date}
                     </span>
                   </div>
-
                   <a
                     href={item.url}
                     target="_blank"
@@ -523,41 +464,32 @@ export default function App() {
             <span className="section-label">PANDUAN</span>
             <h3 className="section-title">Cara Penggunaan</h3>
           </div>
-
           <div className="steps-container">
             <div className="step-card">
               <div className="step-number">1</div>
               <div className="step-content">
                 <h4>Salin Link Media</h4>
-                <p>
-                  Buka aplikasi TikTok, IG, YT, Spotify, dll., lalu klik tombol bagikan dan salin tautannya.
-                </p>
+                <p>Buka aplikasi TikTok, IG, YT, Spotify, dll., lalu klik tombol bagikan dan salin tautannya.</p>
               </div>
             </div>
-
             <div className="step-card">
               <div className="step-number">2</div>
               <div className="step-content">
                 <h4>Tekan Tombol Paste</h4>
-                <p>
-                  Klik tombol Paste di dalam kotak input untuk menempel link secara cepat.
-                </p>
+                <p>Klik tombol Paste di dalam kotak input untuk menempel link secara cepat.</p>
               </div>
             </div>
-
             <div className="step-card">
               <div className="step-number">3</div>
               <div className="step-content">
                 <h4>Klik Download Sekarang</h4>
-                <p>
-                  Pilih opsi resolusi video atau audio MP3 yang muncul untuk mulai mengunduh.
-                </p>
+                <p>Pilih opsi resolusi video atau audio MP3 yang muncul untuk mulai mengunduh.</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION RATING DAN ULASAN DI BAGIAN BAWAH */}
+        {/* SECTION RATING DAN KOMENTAR DI BAGIAN BAWAH */}
         <section className="instructions-section" style={{ marginTop: "40px" }}>
           <div className="section-header">
             <span className="section-label">TESTIMONI</span>
@@ -669,7 +601,6 @@ export default function App() {
               <span>FAST • SIMPLE • FREE</span>
             </div>
           </div>
-
           <p className="footer-tagline">
             Platform download gratis, cepat, mudah dan tanpa ribet.
           </p>
@@ -700,35 +631,27 @@ export default function App() {
           <div className="footer-column">
             <h4>Informasi</h4>
             <ul>
+              <li><a href="https://api.dinn.my.id" target="_blank" rel="noreferrer">Dokumentasi API</a></li>
               <li><a href="#status">Status Layanan</a></li>
               <li><a href="#privacy">Privacy Policy</a></li>
               <li><a href="#terms">Terms of Service</a></li>
-              {/* TAUTAN APK DI BAWAH TERMS OF SERVICE */}
-              <li>
-                <a
-                  href={APK_LINK || "#apk"}
-                  onClick={(e) => {
-                    if (!APK_LINK) {
-                      e.preventDefault();
-                      handleInstallAPK();
-                    }
-                  }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "#22c55e", fontWeight: "600" }}
-                >
-                  📱 Download APK
-                </a>
-              </li>
             </ul>
           </div>
         </div>
 
+        <div className="api-access-card">
+          <div className="api-card-text">
+            <h3>API Access</h3>
+            <p>Gunakan API kami untuk integrasi di website atau bot kamu.</p>
+          </div>
+          <a href="https://api.dinn.my.id" target="_blank" rel="noopener noreferrer" className="api-card-btn">
+            Lihat Dokumentasi API →
+          </a>
+        </div>
+
         <div className="footer-bottom-copyright">
           <p>© 2026 SIDOWNLOAD. All rights reserved.</p>
-          <p className="footer-sub-text">
-            Made with <span style={{ color: "#ef4444" }}>❤️</span> for everyone
-          </p>
+          <p className="footer-sub-text">Made with <span style={{ color: "#ef4444" }}>❤️</span> for everyone</p>
         </div>
       </footer>
     </div>
